@@ -10,6 +10,8 @@ public class Map {
     public static HashSet<Block> ghosts = new HashSet<>();
     public static HashSet<Block> foods = new HashSet<>();
     public static Block pacman;
+    public static Block leftPortal;
+    public static Block rightPortal;
 
 
     public static void loadMapEntities(String[] map, int size) {
@@ -17,10 +19,13 @@ public class Map {
         mapHeight = map.length;
         mapWidth = map[0].length();
 
+
         walls.clear();
         ghosts.clear();
         foods.clear();
         pacman = null;
+        leftPortal = null;
+        rightPortal = null;
 
         for (int r = 0; r < map.length; r++) {
             String row = map[r];
@@ -32,6 +37,10 @@ public class Map {
                 if (blockMapChar == 'X') {
                     Block wall = new Block(x, y, blockSize, blockSize, Resources.wallImage);
                     walls.add(wall);
+                } else if (blockMapChar == '\\') {
+                    leftPortal = new Block(x, y, blockSize, blockSize, Resources.leftPortalImage);
+                } else if (blockMapChar == '/') {
+                    rightPortal = new Block(x, y, blockSize, blockSize, Resources.rightPortalImage);
                 } else if (blockMapChar == 'g') {
                     Block ghost = new Block(x, y, blockSize, blockSize, Resources.greenGhostImage);
                     ghosts.add(ghost);

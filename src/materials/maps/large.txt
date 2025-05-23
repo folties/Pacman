@@ -5,11 +5,11 @@ X                 X
 X XX X XXXXX X XX X
 X    X       X    X
 XXXX XXXX XXXX XXXX
-OOOX X       X XOOO
+---X X       X X---
 XXXX X XXrXX X XXXX
-O       pgo       O
+\       pgo       /
 XXXX X XXXXX X XXXX
-OOOX X       X XOOO
+---X X       X X---
 XXXX X XXXXX X XXXX
 X        X        X
 X XX XXX X XXX XX X

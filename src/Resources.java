@@ -8,7 +8,13 @@ import java.util.List;
 
 public class Resources {
     public static Image wallImage;
+
+    public static Image rightPortalImage;
+    public static Image leftPortalImage;
+
+
     public static Image pacmanImage;
+
     public static Image redGhostImage;
     public static Image pinkGhostImage;
     public static Image orangeGhostImage;
@@ -16,7 +22,12 @@ public class Resources {
 
     public static void loadResources() {
         wallImage = loadImage("./materials/newBlock.png");
+
+        rightPortalImage = loadImage("materials/portals/right/rightPortal1.png");
+        leftPortalImage = loadImage("materials/portals/left/leftPortal1.png");
+
         pacmanImage = loadImage("./materials/pacman/pacmanRight1.png");
+
         redGhostImage = loadImage("./materials/ghosts/redGhost1.png");
         pinkGhostImage = loadImage("./materials/ghosts/pinkGhost1.png");
         orangeGhostImage = loadImage("./materials/ghosts/orangeGhost1.png");

@@ -6,9 +6,12 @@ public class MainWindow extends JFrame {
     private JPanel cardPanel;
 
     public MainWindow() {
-        setTitle("Pacman");
-        setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
-        setResizable(false);
+        this.setTitle("Pacman");
+        this.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
+        this.setPreferredSize(Toolkit.getDefaultToolkit().getScreenSize());
+        this.pack();
+        this.setLocationRelativeTo(null);
+        this.setResizable(false);
 
         cardLayout = new CardLayout();
         cardPanel = new JPanel(cardLayout);
@@ -22,10 +25,9 @@ public class MainWindow extends JFrame {
         cardPanel.add(optionPanel, "options");
         cardPanel.add(gamePanel, "game"); //TODO: duplicate
 
-        setContentPane(cardPanel);
-        pack();
-        setLocationRelativeTo(null);
-        setVisible(true);
+        this.setContentPane(cardPanel);
+        this.setVisible(true);
+
     }
 
     public void showScreen(String name) {

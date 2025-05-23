@@ -6,8 +6,7 @@ public class GamingWindow extends JPanel {
 
     public GamingWindow(int rows, int cols) {
 
-        setPreferredSize(new Dimension(19 * blockSize, 21 * blockSize));
-        setBackground(Color.BLACK);
+        setBackground(new Color(0, 0, 20));
 
         // Load assets and map
         Resources.loadResources();
@@ -38,11 +37,17 @@ public class GamingWindow extends JPanel {
             g.drawImage(Map.pacman.image, offsetX + Map.pacman.x, offsetY + Map.pacman.y,
                     Map.pacman.width, Map.pacman.height, null);
         }
-
+        if (Map.leftPortal != null) {
+            g.drawImage(Map.leftPortal.image, offsetX + Map.leftPortal.x, offsetY + Map.leftPortal.y,
+                    Map.leftPortal.width, Map.leftPortal.height, null);
+        }
+        if (Map.rightPortal != null) {
+            g.drawImage(Map.rightPortal.image, offsetX + Map.rightPortal.x, offsetY + Map.rightPortal.y,
+                    Map.rightPortal.width, Map.rightPortal.height, null);
+        }
         for (Block wall : Map.walls) {
             g.drawImage(wall.image, offsetX + wall.x, offsetY + wall.y, wall.width, wall.height, null);
         }
-
         for (Block ghost : Map.ghosts) {
             g.drawImage(ghost.image, offsetX + ghost.x, offsetY + ghost.y, ghost.width, ghost.height, null);
         }
