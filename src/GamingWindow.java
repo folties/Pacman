@@ -1,5 +1,7 @@
+
 import javax.swing.*;
 import java.awt.*;
+
 
 public class GamingWindow extends JPanel {
     private static final int blockSize = 45;
@@ -54,6 +56,7 @@ public class GamingWindow extends JPanel {
 
         g.setColor(Color.WHITE);
         for (Block food : Map.foods) {
+
             g.fillRect(offsetX + food.x, offsetY + food.y, food.width, food.height);
         }
     }
