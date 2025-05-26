@@ -34,15 +34,15 @@ public class Map {
                 int x = c * blockSize;
                 int y = r * blockSize;
 
-                if (blockMapChar == 'X') {
+                if (blockMapChar == '#') {
                     Block wall = new Block(x, y, blockSize, blockSize, Resources.wallImage);
                     walls.add(wall);
                 } else if (blockMapChar == '\\') {
                     leftPortal = new Block(x, y, blockSize, blockSize, Resources.leftPortalImage);
                 } else if (blockMapChar == '/') {
                     rightPortal = new Block(x, y, blockSize, blockSize, Resources.rightPortalImage);
-                } else if (blockMapChar == 'g') {
-                    Block ghost = new Block(x, y, blockSize, blockSize, Resources.greenGhostImage);
+                } else if (blockMapChar == 'b') {
+                    Block ghost = new Block(x, y, blockSize, blockSize, Resources.blueGhostImage);
                     ghosts.add(ghost);
                 } else if (blockMapChar == 'o') {
                     Block ghost = new Block(x, y, blockSize, blockSize, Resources.orangeGhostImage);
@@ -53,7 +53,7 @@ public class Map {
                 } else if (blockMapChar == 'r') {
                     Block ghost = new Block(x, y, blockSize, blockSize, Resources.redGhostImage);
                     ghosts.add(ghost);
-                } else if (blockMapChar == 'P') {
+                } else if (blockMapChar == 'I') {
                     pacman = new Block(x, y, blockSize, blockSize, Resources.pacmanImage);
                 } else if (blockMapChar == ' ') {
                     Block food = new Block(x + 21, y + 21, 4, 4, null);

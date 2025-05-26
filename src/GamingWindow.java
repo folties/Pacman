@@ -2,13 +2,12 @@
 import javax.swing.*;
 import java.awt.*;
 
-
 public class GamingWindow extends JPanel {
     private static final int blockSize = 45;
 
     public GamingWindow(int rows, int cols) {
 
-        setBackground(new Color(0, 0, 20));
+        setBackground(Color.black);
 
         // Load assets and map
         Resources.loadResources();

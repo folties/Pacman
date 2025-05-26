@@ -16,14 +16,13 @@ public class MainWindow extends JFrame {
         cardLayout = new CardLayout();
         cardPanel = new JPanel(cardLayout);
 
-        // Panels (pass MainWindow for control)
         GameMenu menuPanel = new GameMenu(this);
-        BoardOption optionPanel = new BoardOption(this); // stub or full
-        GamingWindow gamePanel = new GamingWindow(21, 19); // default size
+        BoardOption optionPanel = new BoardOption(this);
+        GamingWindow gamePanel = new GamingWindow(21, 19);
 
         cardPanel.add(menuPanel, "menu");
         cardPanel.add(optionPanel, "options");
-        cardPanel.add(gamePanel, "game"); //TODO: duplicate
+        cardPanel.add(gamePanel, "game");
 
         this.setContentPane(cardPanel);
         this.setVisible(true);
@@ -36,8 +35,8 @@ public class MainWindow extends JFrame {
 
     public void showGame(int rows, int cols) {
         GamingWindow game = new GamingWindow(rows, cols);
-        cardPanel.add(game, "game"); // Add new instance //TODO: duplicate
+        cardPanel.add(game, "game");
         cardLayout.show(cardPanel, "game");
-        pack(); // Resize window to match new game panel
+        pack();
     }
 }

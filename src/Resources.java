@@ -18,7 +18,7 @@ public class Resources {
     public static Image redGhostImage;
     public static Image pinkGhostImage;
     public static Image orangeGhostImage;
-    public static Image greenGhostImage;
+    public static Image blueGhostImage;
 
     public static void loadResources() {
         wallImage = loadImage("./materials/newBlock.png");
@@ -31,7 +31,7 @@ public class Resources {
         redGhostImage = loadImage("./materials/ghosts/redGhost1.png");
         pinkGhostImage = loadImage("./materials/ghosts/pinkGhost1.png");
         orangeGhostImage = loadImage("./materials/ghosts/orangeGhost1.png");
-        greenGhostImage = loadImage("./materials/ghosts/greenGhost1.png");
+        blueGhostImage = loadImage("./materials/ghosts/greenGhost1.png");
     }
 
     public static String[] loadMapFromFile(String filePath) {
@@ -53,8 +53,6 @@ public class Resources {
         return lines.toArray(new String[0]);
     }
 
-
-    // Overloaded version using MapType enum
     public static String[] loadMapType(MapType mapType) {
         return loadMapFromFile(mapType.getPath());
     }

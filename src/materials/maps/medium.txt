@@ -1,20 +1,19 @@
-XXXXXXXXXXXXXXXXX
-X   X       X   X
-X X   XX XX   X X
-X X X X   X X X X
-X X X X X X X X X
-X   X   X   X   X
-XXX X X X X X XXX
---X   X   X   X--
-XXX XXXXrXXXX XXX
-\      pgo      /
-XXX X XXXXX X XXX
---X X   X   X X--
-XXX   X   X   XXX
-X   X XX XX X   X
-X XXX   P   XXX X
-X     XXXXX     X
-X XXX   X   XXX X
-X     X   X     X
-XXXXXXXXXXXXXXXXX
-
+#################
+#   #       #   #
+# #   ## ##   # #
+# # # #   # # # #
+# # # # # # # # #
+#   #   #   #   #
+### # # # # # ###
+--#   #   #   #--
+### ####r#### ###
+\      pbo      /
+### # ##### # ###
+--# #   #   # #--
+###   #   #   ###
+#   # ## ## #   #
+# ###   I   ### #
+#     #####     #
+# ###   #   ### #
+#     #   #     #
+#################
