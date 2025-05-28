@@ -15,6 +15,8 @@ public class GamingWindow extends JPanel {
     private Pacman pacman;
     private BlockType[][] logicMap;
     private JLabel[][] cells;
+    private JLabel pacmanLabel;
+
 
     public GamingWindow(int rows, int cols) {
         setBackground(Color.BLACK);
@@ -49,10 +51,22 @@ public class GamingWindow extends JPanel {
 
         buildGridFromLogicMap(logicMap, gridPanel);
 
+        JLayeredPane layeredPane = new JLayeredPane();
+        layeredPane.setPreferredSize(new Dimension(cols * blockSize, rows * blockSize));
+        layeredPane.setLayout(null); // allows absolute positioning inside
+
+        gridPanel.setBounds(0, 0, cols * blockSize, rows * blockSize);
+        layeredPane.add(gridPanel, Integer.valueOf(0)); // background layer
+
+        pacmanLabel = new JLabel(new ImageIcon(Resources.pacmanImage));
+        pacmanLabel.setBounds(pacman.getX(), pacman.getY(), blockSize, blockSize);
+        layeredPane.add(pacmanLabel, Integer.valueOf(1)); // foreground layer
+
+        setLayout(new GridBagLayout());
         GridBagConstraints gbc = new GridBagConstraints();
         gbc.gridx = 0;
         gbc.gridy = 0;
-        add(gridPanel, gbc);
+        add(layeredPane, gbc);
 
         startGameLoop();
     }
@@ -60,14 +74,17 @@ public class GamingWindow extends JPanel {
     private void startGameLoop() {
         new Thread(() -> {
             while (pacman.getLives() > 0) {
-                pacman.move(logicMap);
-                updateGrid();
+                pacman.stepMove(logicMap);
+                SwingUtilities.invokeLater(() -> {
+                    pacmanLabel.setLocation(pacman.getX(), pacman.getY());
+                });
                 try {
-                    Thread.sleep(200); // Adjust movement speed
+                    Thread.sleep(5); // smooth frame rate
                 } catch (InterruptedException ignored) {}
             }
         }).start();
     }
+
 
 
     private void updateGrid() {
