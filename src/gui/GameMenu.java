@@ -1,3 +1,8 @@
+package gui;
+
+import main.MainWindow;
+import util.Resources;
+
 import javax.swing.*;
 import javax.swing.border.LineBorder;
 import java.awt.*;
@@ -5,7 +10,7 @@ import java.awt.*;
 public class GameMenu extends JPanel {
     private Image backgroundImage;
     public GameMenu(MainWindow mainWindow) {
-        backgroundImage = new ImageIcon(getClass().getResource("/materials/menuBackground.png")).getImage();
+        backgroundImage = Resources.menuBackgroundImage;
         setLayout(new BoxLayout(this, BoxLayout.Y_AXIS));
 
         JButton newGameButton = createMenuButton("New Game");

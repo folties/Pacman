@@ -1,3 +1,8 @@
+package gui;
+
+import main.MainWindow;
+import util.Resources;
+
 import javax.swing.*;
 import javax.swing.border.LineBorder;
 import java.awt.*;
@@ -5,9 +10,8 @@ import java.awt.*;
 public class BoardOption extends JPanel {
     private Image backgroundImage;
         public BoardOption(MainWindow mainWindow) {
-            backgroundImage = new ImageIcon(getClass().getResource("/materials/optionBackground.png")).getImage();
+            backgroundImage = Resources.optionBackgroundImage;
             setLayout(new BoxLayout(this, BoxLayout.Y_AXIS));
-
 
             JLabel name = new JLabel("Select Board Size");
             name.setFont(new Font("TOYZ", Font.BOLD, 50));

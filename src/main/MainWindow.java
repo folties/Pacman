@@ -1,3 +1,9 @@
+package main;
+
+import gui.BoardOption;
+import gui.GameMenu;
+import gui.GamingWindow;
+
 import javax.swing.*;
 import java.awt.*;
 
