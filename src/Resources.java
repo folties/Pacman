@@ -21,10 +21,10 @@ public class Resources {
     public static Image blueGhostImage;
 
     public static void loadResources() {
-        wallImage = loadImage("./materials/newBlock.png");
+        wallImage = loadImage("./materials/stone.png");
 
         rightPortalImage = loadImage("materials/portals/right/rightPortal1.png");
-        leftPortalImage = loadImage("materials/portals/left/leftPortal1.png");
+        leftPortalImage = loadImage("materials/portals/left/leftPortal1.jpg");
 
         pacmanImage = loadImage("./materials/pacman/pacmanRight1.png");
 
