@@ -1,4 +1,4 @@
-package model;
+package model.map;
 
 public enum MapType {
     SMALL("materials/maps/small.txt"),

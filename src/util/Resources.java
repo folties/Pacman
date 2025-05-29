@@ -1,7 +1,8 @@
 package util;
 
-import model.Map;
-import model.MapType;
+import model.map.BlockType;
+import model.map.Map;
+import model.map.MapType;
 
 import javax.swing.*;
 import java.awt.*;
@@ -68,5 +69,19 @@ public class Resources {
             throw new RuntimeException("Image resource not found: " + path);
         }
         return new ImageIcon(url).getImage();
+    }
+
+    public static Image getImageForBlockType(BlockType type) {
+        return switch (type) {
+            case WALL -> wallImage;
+            case FOOD -> foodImage;
+            case LEFT_PORTAL -> leftPortalImage;
+            case RIGHT_PORTAL -> rightPortalImage;
+            case GHOST_BLUE -> blueGhostImage;
+            case GHOST_ORANGE -> orangeGhostImage;
+            case GHOST_PINK -> pinkGhostImage;
+            case GHOST_RED -> redGhostImage;
+            default -> null;
+        };
     }
 }

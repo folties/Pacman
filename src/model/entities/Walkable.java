@@ -1,4 +1,6 @@
-package model;
+package model.entities;
+
+import util.Direction;
 
 public interface Walkable {
 

@@ -1,10 +1,13 @@
-package model;
+package model.entities;
+
+import model.map.BlockType;
+import util.Direction;
 
 public class Pacman implements Walkable {
     private int row, col;
     private Direction direction;
     private Direction nextDirection;
-    private int speed = 1;
+    private int speed = 1000;
     private int lives = 3;
     private int score = 0;
     private int x, y; // pixel positions
@@ -26,7 +29,8 @@ public class Pacman implements Walkable {
             col = x / blockSize;
 
             if (nextDirection != null) {
-                int tryRow = row, tryCol = col;
+                int tryRow = row;
+                int tryCol = col;
                 switch (nextDirection) {
                     case UP -> tryRow--;
                     case DOWN -> tryRow++;
@@ -63,7 +67,6 @@ public class Pacman implements Walkable {
                     logicMap[row][col] = BlockType.EMPTY;
                 }
             }
-            checkFoodCollision(logicMap);
         }
     }
 
@@ -79,30 +82,6 @@ public class Pacman implements Walkable {
                 isWalkable(logicMap, top / blockSize, right / blockSize) &&
                 isWalkable(logicMap, bottom / blockSize, left / blockSize) &&
                 isWalkable(logicMap, bottom / blockSize, right / blockSize);
-    }
-
-
-    private void checkFoodCollision(BlockType[][] logicMap) {
-        int left = x;
-        int right = x + blockSize - 1;
-        int top = y;
-        int bottom = y + blockSize - 1;
-
-        int row1 = top / blockSize;
-        int row2 = bottom / blockSize;
-        int col1 = left / blockSize;
-        int col2 = right / blockSize;
-
-        for (int r = row1; r <= row2; r++) {
-            for (int c = col1; c <= col2; c++) {
-                if (r >= 0 && r < logicMap.length && c >= 0 && c < logicMap[0].length) {
-                    if (logicMap[r][c] == BlockType.FOOD) {
-                        logicMap[r][c] = BlockType.EMPTY;
-                        score += 10;
-                    }
-                }
-            }
-        }
     }
 
     private boolean isWalkable(BlockType[][] logicMap, int r, int c) {

@@ -1,4 +1,6 @@
-package model;
+package model.entities;
+
+import util.Direction;
 
 public abstract class Entity {
     protected int row, col;
