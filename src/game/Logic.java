@@ -1,7 +1,7 @@
 package game;
 
 import model.map.BlockType;
-import model.map.Map;
+import model.map.MapDesign;
 import model.map.MapType;
 import model.entities.Pacman;
 import util.Resources;
@@ -15,7 +15,7 @@ public class Logic {
                 (rows == 19 && cols == 17) ? MapType.MEDIUM : MapType.LARGE;
 
         String[] currentBlockMap = Resources.loadMapType(mapType);
-        logicMap = Map.loadLogicMap(currentBlockMap);
+        logicMap = MapDesign.loadLogicMap(currentBlockMap);
 
         // 🔍 Знайти символ 'P' у карті
         int startRow = 0;

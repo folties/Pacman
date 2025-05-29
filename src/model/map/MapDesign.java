@@ -1,6 +1,6 @@
 package model.map;
 
-public class Map {
+public class MapDesign {
 
     public static BlockType[][] loadLogicMap(String[] mapLines) {
         int rows = mapLines.length;

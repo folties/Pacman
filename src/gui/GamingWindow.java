@@ -1,5 +1,6 @@
 package gui;
 
+import animation.PacmanAnimation;
 import controller.PacmanKeyController;
 import game.GameLoop;
 import game.Logic;
@@ -14,6 +15,7 @@ public class GamingWindow extends JPanel {
     private final Logic gameLogic;
     private JLabel[][] cells;
     private JLabel pacmanLabel;
+    private PacmanAnimation pacmanAnimation;
     private GameLoop gameLoop;
 
     public GamingWindow(int rows, int cols) {
@@ -89,9 +91,16 @@ public class GamingWindow extends JPanel {
         gridPanel.setBounds(0, 0, width, height);
         layeredPane.add(gridPanel, Integer.valueOf(0));
 
-        pacmanLabel = new JLabel(new ImageIcon(Resources.pacmanImage));
+        pacmanLabel = new JLabel();
         pacmanLabel.setBounds(gameLogic.getPacman().getX(), gameLogic.getPacman().getY(), blockSize, blockSize);
         layeredPane.add(pacmanLabel, Integer.valueOf(1));
+
+        pacmanAnimation = new PacmanAnimation(
+                pacmanLabel,
+                gameLogic.getPacman(),
+                Resources.pacmanFrames
+        );
+        pacmanAnimation.start();
 
         return layeredPane;
     }

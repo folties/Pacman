@@ -3,22 +3,16 @@ package model.entities;
 import model.map.BlockType;
 import util.Direction;
 
-public class Pacman implements Walkable {
-    private int row, col;
-    private Direction direction;
+public class Pacman extends Entity implements Walkable {
     private Direction nextDirection;
-    private int speed = 1000;
     private int lives = 3;
     private int score = 0;
     private int x, y; // pixel positions
     private final int blockSize = 45; // adjust if needed
 
     public Pacman(int row, int col) {
-        this.row = row;
-        this.col = col;
-        this.direction = Direction.LEFT;
+        super(row, col, Direction.LEFT, 3);
         this.nextDirection = Direction.LEFT;
-
         this.x = col * blockSize;
         this.y = row * blockSize;
     }
@@ -45,10 +39,10 @@ public class Pacman implements Walkable {
 
         int dx = 0, dy = 0;
         switch (direction) {
-            case UP -> dy = -1;
-            case DOWN -> dy = 1;
-            case LEFT -> dx = -1;
-            case RIGHT -> dx = 1;
+            case UP -> dy =- speed;
+            case DOWN -> dy = speed;
+            case LEFT -> dx = -speed;
+            case RIGHT -> dx = speed;
         }
 
         int nextX = x + dx;
