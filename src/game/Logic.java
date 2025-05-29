@@ -13,7 +13,7 @@ import java.util.List;
 
 public class Logic {
     private final BlockType[][] logicMap;
-    private final Pacman pacman;
+    private Pacman pacman;
     private List<Ghost> ghosts;
 
 
@@ -24,24 +24,24 @@ public class Logic {
         String[] currentBlockMap = Resources.loadMapType(mapType);
         logicMap = MapDesign.loadLogicMap(currentBlockMap);
 
-        // 🔍 Знайти символ 'P' у карті
-        int startRow = 0;
-        int startCol = 0;
+        ghosts = new ArrayList<>(); // ✅ ВАЖЛИВО!
 
         for (int r = 0; r < currentBlockMap.length; r++) {
-            String line = currentBlockMap[r];
-            for (int c = 0; c < line.length(); c++) {
-                if (line.charAt(c) == 'I') {
-                    startRow = r;
-                    startCol = c;
+            for (int c = 0; c < currentBlockMap[r].length(); c++) {
+                char cell = currentBlockMap[r].charAt(c);
+                if (cell == 'I') {
+                    pacman = new Pacman(r, c);
+                } else if (cell == 'r') {
+                    ghosts.add(new Ghost(r, c, Resources.redGhostImage));
+                } else if (cell == 'p') {
+                    ghosts.add(new Ghost(r, c, Resources.pinkGhostImage));
+                } else if (cell == 'o') {
+                    ghosts.add(new Ghost(r, c, Resources.orangeGhostImage));
+                } else if (cell == 'b') {
+                    ghosts.add(new Ghost(r, c, Resources.blueGhostImage));
                 }
             }
         }
-
-        ghosts = new ArrayList<>();
-        ghosts.add(new Ghost(9, 6));
-
-        pacman = new Pacman(startRow, startCol);
     }
 
 

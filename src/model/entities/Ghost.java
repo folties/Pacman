@@ -3,17 +3,19 @@ package model.entities;
 import model.map.BlockType;
 import util.Direction;
 
+import java.awt.*;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
-import java.util.Random;
 
 public class Ghost extends Entity {
     private final int blockSize = 45;
     private int x, y;
+    private final Image image;
 
-    public Ghost(int row, int col) {
+    public Ghost(int row, int col, Image image) {
         super(row, col, Direction.UP, 15);
+        this.image = image;
         this.x = col * blockSize;
         this.y = row * blockSize;
     }
@@ -81,34 +83,6 @@ public class Ghost extends Entity {
         };
     }
 
-
-
-    private Direction getRandomDirection(BlockType[][] logicMap) {
-        List<Direction> directions = new ArrayList<>();
-        System.out.println("[Ghost] Checking directions:");
-        for (Direction dir : Direction.values()) {
-            if (dir == getOpposite(direction)) continue; // ❌ не йдемо назад
-
-            int tryRow = row + (dir == Direction.UP ? -1 : dir == Direction.DOWN ? 1 : 0);
-            int tryCol = col + (dir == Direction.LEFT ? -1 : dir == Direction.RIGHT ? 1 : 0);
-            int pixelX = tryCol * blockSize;
-            int pixelY = tryRow * blockSize;
-            System.out.print("  " + dir + ": ");
-            if (canMoveTo(pixelX, pixelY, logicMap)) {
-                directions.add(dir);
-                System.out.println("✅ walkable");
-            }else {
-                System.out.println("❌ wall or out");
-            }
-        }
-
-        if (directions.isEmpty()) return getOpposite(direction); // єдиний варіант — назад
-        Collections.shuffle(directions);
-        return directions.get(0);
-    }
-
-
-
     private boolean canMoveTo(int x, int y, BlockType[][] logicMap) {
         int left = x;
         int right = x + blockSize - 1;
@@ -129,4 +103,7 @@ public class Ghost extends Entity {
 
     public int getX() { return x; }
     public int getY() { return y; }
+    public Image getImage() {
+        return image;
+    }
 }

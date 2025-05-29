@@ -7,7 +7,6 @@ import game.GhostLoop;
 import game.Logic;
 import model.entities.Ghost;
 import model.map.BlockType;
-import util.Direction;
 import util.Resources;
 
 import javax.swing.*;
@@ -23,8 +22,6 @@ public class GamingWindow extends JPanel {
     private JLabel pacmanLabel;
     private PacmanAnimation pacmanAnimation;
     private GameLoop gameLoop;
-    private JLabel redGhostLabel;
-    private Ghost redGhost;
     private List<GhostLoop> ghostLoops = new ArrayList<>();
 
 
@@ -107,7 +104,7 @@ public class GamingWindow extends JPanel {
         layeredPane.add(pacmanLabel, Integer.valueOf(1));
 
         for (Ghost ghost : gameLogic.getGhosts()) {
-            JLabel ghostLabel = new JLabel(new ImageIcon(Resources.redGhostImage)); // або обирай залежно від типу
+            JLabel ghostLabel = new JLabel(new ImageIcon(ghost.getImage())); // або обирай залежно від типу
             ghostLabel.setBounds(ghost.getX(), ghost.getY(), blockSize, blockSize);
             layeredPane.add(ghostLabel, Integer.valueOf(1));
 

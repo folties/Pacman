@@ -25,7 +25,7 @@ public class GhostLoop extends Thread {
                 ghostLabel.setLocation(ghost.getX(), ghost.getY());
             });
             try {
-                Thread.sleep(200); // speed control
+                Thread.sleep(100); // speed control
             } catch (InterruptedException ignored) {}
         }
     }

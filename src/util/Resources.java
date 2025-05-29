@@ -109,10 +109,6 @@ public class Resources {
             case FOOD -> foodImage;
             case LEFT_PORTAL -> leftPortalImage;
             case RIGHT_PORTAL -> rightPortalImage;
-            case GHOST_BLUE -> blueGhostImage;
-            case GHOST_ORANGE -> orangeGhostImage;
-            case GHOST_PINK -> pinkGhostImage;
-            case GHOST_RED -> redGhostImage;
             default -> null;
         };
     }
