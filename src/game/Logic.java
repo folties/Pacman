@@ -1,14 +1,21 @@
 package game;
 
+import model.entities.Ghost;
 import model.map.BlockType;
 import model.map.MapDesign;
 import model.map.MapType;
 import model.entities.Pacman;
+import util.Direction;
 import util.Resources;
+
+import java.util.ArrayList;
+import java.util.List;
 
 public class Logic {
     private final BlockType[][] logicMap;
     private final Pacman pacman;
+    private List<Ghost> ghosts;
+
 
     public Logic(int rows, int cols) {
         MapType mapType = (rows == 17 && cols == 15) ? MapType.SMALL :
@@ -31,6 +38,9 @@ public class Logic {
             }
         }
 
+        ghosts = new ArrayList<>();
+        ghosts.add(new Ghost(9, 6));
+
         pacman = new Pacman(startRow, startCol);
     }
 
@@ -45,4 +55,9 @@ public class Logic {
     public BlockType[][] getLogicMap() {
         return logicMap;
     }
+
+    public List<Ghost> getGhosts() {
+        return ghosts;
+    }
+
 }

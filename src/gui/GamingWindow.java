@@ -3,12 +3,18 @@ package gui;
 import animation.PacmanAnimation;
 import controller.PacmanKeyController;
 import game.GameLoop;
+import game.GhostLoop;
 import game.Logic;
+import model.entities.Ghost;
 import model.map.BlockType;
+import util.Direction;
 import util.Resources;
 
 import javax.swing.*;
 import java.awt.*;
+import java.util.ArrayList;
+import java.util.List;
+
 
 public class GamingWindow extends JPanel {
     private static final int blockSize = 45;
@@ -17,6 +23,10 @@ public class GamingWindow extends JPanel {
     private JLabel pacmanLabel;
     private PacmanAnimation pacmanAnimation;
     private GameLoop gameLoop;
+    private JLabel redGhostLabel;
+    private Ghost redGhost;
+    private List<GhostLoop> ghostLoops = new ArrayList<>();
+
 
     public GamingWindow(int rows, int cols) {
         setLayout(new GridBagLayout());
@@ -38,6 +48,7 @@ public class GamingWindow extends JPanel {
             SwingUtilities.invokeLater(() ->
                     pacmanLabel.setLocation(gameLogic.getPacman().getX(), gameLogic.getPacman().getY()));
         });
+
         gameLoop.start();
 
     }
@@ -94,6 +105,17 @@ public class GamingWindow extends JPanel {
         pacmanLabel = new JLabel();
         pacmanLabel.setBounds(gameLogic.getPacman().getX(), gameLogic.getPacman().getY(), blockSize, blockSize);
         layeredPane.add(pacmanLabel, Integer.valueOf(1));
+
+        for (Ghost ghost : gameLogic.getGhosts()) {
+            JLabel ghostLabel = new JLabel(new ImageIcon(Resources.redGhostImage)); // або обирай залежно від типу
+            ghostLabel.setBounds(ghost.getX(), ghost.getY(), blockSize, blockSize);
+            layeredPane.add(ghostLabel, Integer.valueOf(1));
+
+            GhostLoop loop = new GhostLoop(ghost, gameLogic.getLogicMap(), ghostLabel);
+            loop.start();
+            ghostLoops.add(loop);
+
+        }
 
         pacmanAnimation = new PacmanAnimation(
                 pacmanLabel,
