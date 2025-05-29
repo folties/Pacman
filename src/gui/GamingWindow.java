@@ -22,7 +22,6 @@ public class GamingWindow extends JPanel {
         setBackground(Color.BLACK);
         setLayout(new GridBagLayout()); // Center the grid panel
 
-        Resources.loadResources();
         MapType mapType;
 
         if (rows == 17 && cols == 15) {
@@ -45,7 +44,7 @@ public class GamingWindow extends JPanel {
         setFocusable(true);
         SwingUtilities.invokeLater(this::requestFocusInWindow);
 
-        cells = new JLabel[rows][cols]; // save to field
+        cells = new JLabel[rows][cols];
         JPanel gridPanel = new JPanel(new GridLayout(rows, cols));
         gridPanel.setPreferredSize(new Dimension(cols * blockSize, rows * blockSize));
 
@@ -75,6 +74,7 @@ public class GamingWindow extends JPanel {
         new Thread(() -> {
             while (pacman.getLives() > 0) {
                 pacman.stepMove(logicMap);
+                updateGrid();
                 SwingUtilities.invokeLater(() -> {
                     pacmanLabel.setLocation(pacman.getX(), pacman.getY());
                 });
@@ -95,9 +95,6 @@ public class GamingWindow extends JPanel {
                     case FOOD -> Resources.foodImage;
                     default -> null;
                 };
-                if (r == pacman.getRow() && c == pacman.getCol()) {
-                    image = Resources.pacmanImage;
-                }
                 cells[r][c].setIcon(image != null ? new ImageIcon(image) : null);
             }
         }
@@ -115,7 +112,7 @@ public class GamingWindow extends JPanel {
                 label.setVerticalAlignment(SwingConstants.CENTER);
                 label.setPreferredSize(new Dimension(blockSize, blockSize));
 
-                cells[r][c] = label; // 💥 This is the missing line!
+                cells[r][c] = label;
 
                 BlockType type = logicMap[r][c];
                 Image image = switch (type) {
@@ -126,7 +123,6 @@ public class GamingWindow extends JPanel {
                     case GHOST_ORANGE -> Resources.orangeGhostImage;
                     case GHOST_PINK -> Resources.pinkGhostImage;
                     case GHOST_RED -> Resources.redGhostImage;
-                    case PLAYER -> Resources.pacmanImage;
                     case FOOD -> Resources.foodImage;
                     default -> null;
                 };

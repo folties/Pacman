@@ -63,6 +63,7 @@ public class Pacman implements Walkable {
                     logicMap[row][col] = BlockType.EMPTY;
                 }
             }
+            checkFoodCollision(logicMap);
         }
     }
 
@@ -81,36 +82,25 @@ public class Pacman implements Walkable {
     }
 
 
-    @Override
-    public void move(BlockType[][] logicMap) {
-        if (nextDirection != null) {
-            int tryRow = row, tryCol = col;
-            switch (nextDirection) {
-                case UP -> tryRow--;
-                case DOWN -> tryRow++;
-                case LEFT -> tryCol--;
-                case RIGHT -> tryCol++;
-            }
-            if (isWalkable(logicMap, tryRow, tryCol)) {
-                direction = nextDirection;
-            }
-        }
+    private void checkFoodCollision(BlockType[][] logicMap) {
+        int left = x;
+        int right = x + blockSize - 1;
+        int top = y;
+        int bottom = y + blockSize - 1;
 
-        int newRow = row, newCol = col;
-        switch (direction) {
-            case UP -> newRow--;
-            case DOWN -> newRow++;
-            case LEFT -> newCol--;
-            case RIGHT -> newCol++;
-        }
+        int row1 = top / blockSize;
+        int row2 = bottom / blockSize;
+        int col1 = left / blockSize;
+        int col2 = right / blockSize;
 
-        if (isWalkable(logicMap, newRow, newCol)) {
-            row = newRow;
-            col = newCol;
-
-            if (logicMap[row][col] == BlockType.FOOD) {
-                score += 10;
-                logicMap[row][col] = BlockType.EMPTY;
+        for (int r = row1; r <= row2; r++) {
+            for (int c = col1; c <= col2; c++) {
+                if (r >= 0 && r < logicMap.length && c >= 0 && c < logicMap[0].length) {
+                    if (logicMap[r][c] == BlockType.FOOD) {
+                        logicMap[r][c] = BlockType.EMPTY;
+                        score += 10;
+                    }
+                }
             }
         }
     }
