@@ -1,6 +1,7 @@
 package gui;
 
 import animation.PacmanAnimation;
+import animation.PortalAnimation;
 import controller.PacmanKeyController;
 import game.GameLoop;
 import game.GhostLoop;
@@ -23,6 +24,10 @@ public class GamingWindow extends JPanel {
     private PacmanAnimation pacmanAnimation;
     private GameLoop gameLoop;
     private List<GhostLoop> ghostLoops = new ArrayList<>();
+
+    private JLabel leftPortalLabel;
+    private JLabel rightPortalLabel;
+
 
 
     public GamingWindow(int rows, int cols) {
@@ -120,6 +125,23 @@ public class GamingWindow extends JPanel {
                 Resources.pacmanFrames
         );
         pacmanAnimation.start();
+
+        Point leftPortal = gameLogic.getLeftPortalPos();
+        leftPortalLabel = new JLabel();
+        leftPortalLabel.setBounds(leftPortal.x * blockSize, leftPortal.y * blockSize, blockSize, blockSize);
+        layeredPane.add(leftPortalLabel, Integer.valueOf(1));
+
+        Point rightPortal = gameLogic.getRightPortalPos();
+        rightPortalLabel = new JLabel();
+        rightPortalLabel.setBounds(rightPortal.x * blockSize, rightPortal.y * blockSize, blockSize, blockSize);
+        layeredPane.add(rightPortalLabel, Integer.valueOf(1));
+
+
+        PortalAnimation leftAnim = new PortalAnimation(leftPortalLabel, Resources.leftPortalFrames);
+        PortalAnimation rightAnim = new PortalAnimation(rightPortalLabel, Resources.rightPortalFrames);
+
+        leftAnim.start();
+        rightAnim.start();
 
         return layeredPane;
     }

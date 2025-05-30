@@ -8,6 +8,7 @@ import model.entities.Pacman;
 import util.Direction;
 import util.Resources;
 
+import java.awt.*;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -15,6 +16,9 @@ public class Logic {
     private final BlockType[][] logicMap;
     private Pacman pacman;
     private List<Ghost> ghosts;
+
+    private Point leftPortalPos;
+    private Point rightPortalPos;
 
 
     public Logic(int rows, int cols) {
@@ -39,6 +43,10 @@ public class Logic {
                     ghosts.add(new Ghost(r, c, Resources.orangeGhostImage));
                 } else if (cell == 'b') {
                     ghosts.add(new Ghost(r, c, Resources.blueGhostImage));
+                } else if (cell == 'L') {
+                    leftPortalPos = new Point(c, r);
+                } else if (cell == 'R') {
+                    rightPortalPos = new Point(c, r);
                 }
             }
         }
@@ -59,5 +67,8 @@ public class Logic {
     public List<Ghost> getGhosts() {
         return ghosts;
     }
+
+    public Point getLeftPortalPos() { return leftPortalPos; }
+    public Point getRightPortalPos() { return rightPortalPos; }
 
 }

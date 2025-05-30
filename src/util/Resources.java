@@ -29,7 +29,8 @@ public class Resources {
 
     public static Map<Direction, Image[]> pacmanFrames;
 
-    public static Image[] pacmanImages;
+    public static Image[] leftPortalFrames;
+    public static Image[] rightPortalFrames;
 
     public static void loadResources() {
 
@@ -59,13 +60,34 @@ public class Resources {
                 loadImage("materials/pacman/pacmanDown3.png")
         });
 
+        leftPortalFrames = new Image[] {
+                loadImage("materials/portals/left/leftPortal1.png"),
+                loadImage("materials/portals/left/leftPortal2.png"),
+                loadImage("materials/portals/left/leftPortal3.png"),
+                loadImage("materials/portals/left/leftPortal4.png"),
+                loadImage("materials/portals/left/leftPortal5.png"),
+                loadImage("materials/portals/left/leftPortal6.png"),
+                loadImage("materials/portals/left/leftPortal7.png"),
+                loadImage("materials/portals/left/leftPortal8.png"),
+                loadImage("materials/portals/left/leftPortal9.png")
+        };
+
+        rightPortalFrames = new Image[] {
+                loadImage("materials/portals/right/rightPortal1.png"),
+                loadImage("materials/portals/right/rightPortal2.png"),
+                loadImage("materials/portals/right/rightPortal3.png"),
+                loadImage("materials/portals/right/rightPortal4.png"),
+                loadImage("materials/portals/right/rightPortal5.png"),
+                loadImage("materials/portals/right/rightPortal6.png"),
+                loadImage("materials/portals/right/rightPortal7.png"),
+                loadImage("materials/portals/right/rightPortal8.png"),
+                loadImage("materials/portals/right/rightPortal9.png")
+        };
 
         menuBackgroundImage = loadImage("materials/menuBackground.png");
         optionBackgroundImage = loadImage("materials/optionBackground.png");
         wallImage = loadImage("materials/stone.png");
         foodImage = loadImage("materials/food.png");
-        rightPortalImage = loadImage("materials/portals/right/rightPortal1.png");
-        leftPortalImage = loadImage("materials/portals/left/leftPortal1.jpg");
         redGhostImage = loadImage("materials/ghosts/redGhost1.png");
         pinkGhostImage = loadImage("materials/ghosts/pinkGhost1.png");
         orangeGhostImage = loadImage("materials/ghosts/orangeGhost1.png");

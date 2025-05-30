@@ -19,8 +19,8 @@ public class MapDesign {
                     case 'p' -> BlockType.GHOST_PINK;
                     case 'o' -> BlockType.GHOST_ORANGE;
                     case 'b' -> BlockType.GHOST_BLUE;
-                    case '\\' -> BlockType.LEFT_PORTAL;
-                    case '/' -> BlockType.RIGHT_PORTAL;
+                    case 'L' -> BlockType.LEFT_PORTAL;
+                    case 'R' -> BlockType.RIGHT_PORTAL;
                     default -> BlockType.EMPTY;
                 };
             }

@@ -3,6 +3,8 @@ package model.entities;
 import model.map.BlockType;
 import util.Direction;
 
+import java.awt.*;
+
 public class Pacman extends Entity implements Walkable {
     private Direction nextDirection;
     private int lives = 3;
