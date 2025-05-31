@@ -28,6 +28,8 @@ public class GamingWindow extends JPanel {
 
     private JLabel leftPortalLabel;
     private JLabel rightPortalLabel;
+    private JLabel scoreLabel;
+    private JLabel livesLabel;
 
 
 
@@ -46,10 +48,33 @@ public class GamingWindow extends JPanel {
         gbc.gridy = 0;
         add(layeredPane, gbc);
 
+        scoreLabel = new JLabel("Score: 0");
+        scoreLabel.setForeground(Color.WHITE);
+        scoreLabel.setFont(new Font("Rockwell", Font.BOLD, 30));
+
+        GridBagConstraints scoreGbc = new GridBagConstraints();
+        scoreGbc.gridx = 0;
+        scoreGbc.gridy = 1;
+        scoreGbc.insets = new Insets(10, 0, 0, 0);
+        add(scoreLabel, scoreGbc);
+
+        livesLabel = new JLabel("Lives: " + gameLogic.getPacman().getLives());
+        livesLabel.setForeground(Color.WHITE);
+        livesLabel.setFont(new Font("Rockwell", Font.BOLD, 30));
+
+        GridBagConstraints livesConstraints = new GridBagConstraints();
+        livesConstraints.gridx = 0;
+        livesConstraints.gridy = 1;
+        livesConstraints.insets = new Insets(10, 400, 0, 0); // spacing
+        add(livesLabel, livesConstraints);
+
+
         gameLoop = new GameLoop(gameLogic, () -> {
             updateGrid();
             SwingUtilities.invokeLater(() ->
                     pacmanLabel.setLocation(gameLogic.getPacman().getX(), gameLogic.getPacman().getY()));
+            scoreLabel.setText("Score: " + gameLogic.getScore());
+            livesLabel.setText("Lives: " + gameLogic.getPacman().getLives());
         });
 
         gameLoop.start();
@@ -114,7 +139,7 @@ public class GamingWindow extends JPanel {
             ghostLabel.setBounds(ghost.getX(), ghost.getY(), blockSize, blockSize);
             layeredPane.add(ghostLabel, Integer.valueOf(1));
 
-            GhostLoop loop = new GhostLoop(ghost, gameLogic.getLogicMap(), ghostLabel);
+            GhostLoop loop = new GhostLoop(ghost, gameLogic.getLogicMap(), ghostLabel, gameLogic.getPacman(), gameLogic);
             loop.start();
             ghostLoops.add(loop);
 

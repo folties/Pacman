@@ -16,8 +16,12 @@ public class Ghost extends Entity {
     private Point rightPortalPos;
     private Map<Direction, Image[]> animationFrames;
 
+    private final int startRow, startCol;
+
     public Ghost(int row, int col) {
         super(row, col, Direction.UP, 15);
+        this.startRow = row;
+        this.startCol = col;
         this.x = col * blockSize;
         this.y = row * blockSize;
     }
@@ -95,6 +99,14 @@ public class Ghost extends Entity {
             case LEFT -> Direction.RIGHT;
             case RIGHT -> Direction.LEFT;
         };
+    }
+
+    public void resetPosition() {
+        this.row = startRow;
+        this.col = startCol;
+        this.x = col * blockSize;
+        this.y = row * blockSize;
+        this.direction = Direction.UP; // або початковий напрям
     }
 
     private boolean canMoveTo(int x, int y, BlockType[][] logicMap) {

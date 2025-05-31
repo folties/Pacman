@@ -98,5 +98,15 @@ public class Logic {
     public Point getRightPortalPos() {
         return rightPortalPos;
     }
+    public int getScore() {
+        return pacman.getScore();
+    }
+    public void resetAllGhosts() {
+        for (Ghost ghost : ghosts) {
+            ghost.resetPosition();
+        }
+    }
+
+
 }
 

@@ -13,13 +13,25 @@ public class Pacman extends Entity implements Walkable {
     private final int blockSize = 45; // adjust if needed
     private Point leftPortalPos;
     private Point rightPortalPos;
+    private final int startRow, startCol;
 
 
     public Pacman(int row, int col) {
         super(row, col, Direction.LEFT, 3);
         this.nextDirection = Direction.LEFT;
+        this.startRow = row;
+        this.startCol = col;
         this.x = col * blockSize;
         this.y = row * blockSize;
+    }
+
+    public void resetPosition() {
+        this.row = startRow;
+        this.col = startCol;
+        this.x = col * blockSize;
+        this.y = row * blockSize;
+        this.direction = Direction.LEFT;
+        this.nextDirection = Direction.LEFT;
     }
 
     public void stepMove(BlockType[][] logicMap) {
@@ -100,6 +112,9 @@ public class Pacman extends Entity implements Walkable {
                 c >= 0 && c < logicMap[0].length &&
                 logicMap[r][c] != BlockType.WALL;
     }
+    public void loseLife() {
+        lives--;
+    }
 
     @Override public int getRow() { return row; }
     @Override public int getCol() { return col; }
@@ -115,6 +130,7 @@ public class Pacman extends Entity implements Walkable {
         this.leftPortalPos = left;
         this.rightPortalPos = right;
     }
+
 
 
 }

@@ -19,7 +19,7 @@ public class GameLoop extends Thread {
     @Override
     public void run() {
         Pacman pacman = logic.getPacman();
-        while (running && pacman.getLives() > 0) {
+        while (running && pacman.getLives() >= 0) {
             logic.update();
             onFrameUpdate.run();
 
