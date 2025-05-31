@@ -7,15 +7,17 @@ import java.awt.*;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
+import java.util.Map;
 
 public class Ghost extends Entity {
     private final int blockSize = 45;
     private int x, y;
-    private final Image image;
+    private Point leftPortalPos;
+    private Point rightPortalPos;
+    private Map<Direction, Image[]> animationFrames;
 
-    public Ghost(int row, int col, Image image) {
+    public Ghost(int row, int col) {
         super(row, col, Direction.UP, 15);
-        this.image = image;
         this.x = col * blockSize;
         this.y = row * blockSize;
     }
@@ -24,6 +26,18 @@ public class Ghost extends Entity {
         if (x % blockSize == 0 && y % blockSize == 0) {
             row = y / blockSize;
             col = x / blockSize;
+
+            if (logicMap[row][col] == BlockType.LEFT_PORTAL && rightPortalPos != null) {
+                x = rightPortalPos.x * blockSize;
+                y = rightPortalPos.y * blockSize;
+                row = rightPortalPos.y;
+                col = rightPortalPos.x;
+            } else if (logicMap[row][col] == BlockType.RIGHT_PORTAL && leftPortalPos != null) {
+                x = leftPortalPos.x * blockSize;
+                y = leftPortalPos.y * blockSize;
+                row = leftPortalPos.y;
+                col = leftPortalPos.x;
+            }
 
             List<Direction> validDirs = new ArrayList<>();
 
@@ -103,7 +117,18 @@ public class Ghost extends Entity {
 
     public int getX() { return x; }
     public int getY() { return y; }
-    public Image getImage() {
-        return image;
+    public void setPortalPositions(Point left, Point right) {
+        this.leftPortalPos = left;
+        this.rightPortalPos = right;
     }
+    public void setAnimationFrames(Map<Direction, Image[]> frames) {
+        this.animationFrames = frames;
+    }
+    public Image[] getFramesForDirection(Direction direction) {
+        return animationFrames.get(direction);
+    }
+    public Direction getDirection() {
+        return direction;
+    }
+
 }

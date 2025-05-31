@@ -1,5 +1,6 @@
 package gui;
 
+import animation.GhostAnimation;
 import animation.PacmanAnimation;
 import animation.PortalAnimation;
 import controller.PacmanKeyController;
@@ -109,13 +110,16 @@ public class GamingWindow extends JPanel {
         layeredPane.add(pacmanLabel, Integer.valueOf(1));
 
         for (Ghost ghost : gameLogic.getGhosts()) {
-            JLabel ghostLabel = new JLabel(new ImageIcon(ghost.getImage())); // або обирай залежно від типу
+            JLabel ghostLabel = new JLabel(); // або обирай залежно від типу
             ghostLabel.setBounds(ghost.getX(), ghost.getY(), blockSize, blockSize);
             layeredPane.add(ghostLabel, Integer.valueOf(1));
 
             GhostLoop loop = new GhostLoop(ghost, gameLogic.getLogicMap(), ghostLabel);
             loop.start();
             ghostLoops.add(loop);
+
+            GhostAnimation ghostAnim = new GhostAnimation(ghostLabel, ghost);
+            ghostAnim.start();
 
         }
 

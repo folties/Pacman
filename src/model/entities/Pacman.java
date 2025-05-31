@@ -11,6 +11,9 @@ public class Pacman extends Entity implements Walkable {
     private int score = 0;
     private int x, y; // pixel positions
     private final int blockSize = 45; // adjust if needed
+    private Point leftPortalPos;
+    private Point rightPortalPos;
+
 
     public Pacman(int row, int col) {
         super(row, col, Direction.LEFT, 3);
@@ -62,6 +65,18 @@ public class Pacman extends Entity implements Walkable {
                     score += 10;
                     logicMap[row][col] = BlockType.EMPTY;
                 }
+                // ⬇️ ADD THIS BLOCK HERE:
+                if (logicMap[row][col] == BlockType.LEFT_PORTAL && rightPortalPos != null) {
+                    x = rightPortalPos.x * blockSize;
+                    y = rightPortalPos.y * blockSize;
+                    row = rightPortalPos.y;
+                    col = rightPortalPos.x;
+                } else if (logicMap[row][col] == BlockType.RIGHT_PORTAL && leftPortalPos != null) {
+                    x = leftPortalPos.x * blockSize;
+                    y = leftPortalPos.y * blockSize;
+                    row = leftPortalPos.y;
+                    col = leftPortalPos.x;
+                }
             }
         }
     }
@@ -96,5 +111,10 @@ public class Pacman extends Entity implements Walkable {
     public int getScore() { return score; }
     public int getX() { return x; }
     public int getY() { return y; }
+    public void setPortalPositions(Point left, Point right) {
+        this.leftPortalPos = left;
+        this.rightPortalPos = right;
+    }
+
 
 }

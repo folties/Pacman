@@ -4,6 +4,7 @@ import model.map.BlockType;
 import model.map.MapDesign;
 import model.map.MapType;
 
+
 import javax.swing.*;
 import java.awt.*;
 import java.io.BufferedReader;
@@ -20,17 +21,17 @@ public class Resources {
     public static Image optionBackgroundImage;
     public static Image wallImage;
     public static Image foodImage;
-    public static Image rightPortalImage;
-    public static Image leftPortalImage;
-    public static Image redGhostImage;
-    public static Image pinkGhostImage;
-    public static Image orangeGhostImage;
-    public static Image blueGhostImage;
 
     public static Map<Direction, Image[]> pacmanFrames;
 
     public static Image[] leftPortalFrames;
     public static Image[] rightPortalFrames;
+
+    public static Map<Direction, Image[]> redGhostFrames;
+    public static Map<Direction, Image[]> pinkGhostFrames;
+    public static Map<Direction, Image[]> blueGhostFrames;
+    public static Map<Direction, Image[]> orangeGhostFrames;
+
 
     public static void loadResources() {
 
@@ -60,6 +61,94 @@ public class Resources {
                 loadImage("materials/pacman/pacmanDown3.png")
         });
 
+        redGhostFrames = new HashMap<>();
+
+        redGhostFrames.put(Direction.RIGHT, new Image[]{
+                loadImage("materials/ghosts/red/redGhostRight1.png"),
+                loadImage("materials/ghosts/red/redGhostRight2.png")
+        });
+
+        redGhostFrames.put(Direction.LEFT, new Image[]{
+                loadImage("materials/ghosts/red/redGhostLeft1.png"),
+                loadImage("materials/ghosts/red/redGhostLeft2.png")
+        });
+
+        redGhostFrames.put(Direction.UP, new Image[]{
+                loadImage("materials/ghosts/red/redGhostUp1.png"),
+                loadImage("materials/ghosts/red/redGhostUp2.png")
+        });
+
+        redGhostFrames.put(Direction.DOWN, new Image[]{
+                loadImage("materials/ghosts/red/redGhostDown1.png"),
+                loadImage("materials/ghosts/red/redGhostDown2.png")
+        });
+
+        pinkGhostFrames = new HashMap<>();
+
+        pinkGhostFrames.put(Direction.RIGHT, new Image[]{
+                loadImage("materials/ghosts/pink/pinkGhostRight1.png"),
+                loadImage("materials/ghosts/pink/pinkGhostRight2.png")
+        });
+
+        pinkGhostFrames.put(Direction.LEFT, new Image[]{
+                loadImage("materials/ghosts/pink/pinkGhostLeft1.png"),
+                loadImage("materials/ghosts/pink/pinkGhostLeft2.png")
+        });
+
+        pinkGhostFrames.put(Direction.UP, new Image[]{
+                loadImage("materials/ghosts/pink/pinkGhostUp1.png"),
+                loadImage("materials/ghosts/pink/pinkGhostUp2.png")
+        });
+
+        pinkGhostFrames.put(Direction.DOWN, new Image[]{
+                loadImage("materials/ghosts/pink/pinkGhostDown1.png"),
+                loadImage("materials/ghosts/pink/pinkGhostDown2.png")
+        });
+
+        blueGhostFrames = new HashMap<>();
+
+        blueGhostFrames.put(Direction.RIGHT, new Image[]{
+                loadImage("materials/ghosts/blue/blueGhostRight1.png"),
+                loadImage("materials/ghosts/blue/blueGhostRight2.png")
+        });
+
+        blueGhostFrames.put(Direction.LEFT, new Image[]{
+                loadImage("materials/ghosts/blue/blueGhostLeft1.png"),
+                loadImage("materials/ghosts/blue/blueGhostLeft2.png")
+        });
+
+        blueGhostFrames.put(Direction.UP, new Image[]{
+                loadImage("materials/ghosts/blue/blueGhostUp1.png"),
+                loadImage("materials/ghosts/blue/blueGhostUp2.png")
+        });
+
+        blueGhostFrames.put(Direction.DOWN, new Image[]{
+                loadImage("materials/ghosts/blue/blueGhostDown1.png"),
+                loadImage("materials/ghosts/blue/blueGhostDown2.png")
+        });
+
+        orangeGhostFrames = new HashMap<>();
+
+        orangeGhostFrames.put(Direction.RIGHT, new Image[]{
+                loadImage("materials/ghosts/orange/orangeGhostRight1.png"),
+                loadImage("materials/ghosts/orange/orangeGhostRight2.png")
+        });
+
+        orangeGhostFrames.put(Direction.LEFT, new Image[]{
+                loadImage("materials/ghosts/orange/orangeGhostLeft1.png"),
+                loadImage("materials/ghosts/orange/orangeGhostLeft2.png")
+        });
+
+        orangeGhostFrames.put(Direction.UP, new Image[]{
+                loadImage("materials/ghosts/orange/orangeGhostUp1.png"),
+                loadImage("materials/ghosts/orange/orangeGhostUp2.png")
+        });
+
+        orangeGhostFrames.put(Direction.DOWN, new Image[]{
+                loadImage("materials/ghosts/orange/orangeGhostDown1.png"),
+                loadImage("materials/ghosts/orange/orangeGhostDown2.png")
+        });
+
         leftPortalFrames = new Image[] {
                 loadImage("materials/portals/left/leftPortal1.png"),
                 loadImage("materials/portals/left/leftPortal2.png"),
@@ -84,14 +173,12 @@ public class Resources {
                 loadImage("materials/portals/right/rightPortal9.png")
         };
 
+
+
         menuBackgroundImage = loadImage("materials/menuBackground.png");
         optionBackgroundImage = loadImage("materials/optionBackground.png");
         wallImage = loadImage("materials/stone.png");
         foodImage = loadImage("materials/food.png");
-        redGhostImage = loadImage("materials/ghosts/redGhost1.png");
-        pinkGhostImage = loadImage("materials/ghosts/pinkGhost1.png");
-        orangeGhostImage = loadImage("materials/ghosts/orangeGhost1.png");
-        blueGhostImage = loadImage("materials/ghosts/greenGhost1.png");
     }
 
     public static String[] loadMapFromFile(String filePath) {
@@ -129,8 +216,6 @@ public class Resources {
         return switch (type) {
             case WALL -> wallImage;
             case FOOD -> foodImage;
-            case LEFT_PORTAL -> leftPortalImage;
-            case RIGHT_PORTAL -> rightPortalImage;
             default -> null;
         };
     }
