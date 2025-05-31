@@ -29,7 +29,7 @@ public class GamingWindow extends JPanel {
     private JLabel leftPortalLabel;
     private JLabel rightPortalLabel;
     private JLabel scoreLabel;
-    private JLabel livesLabel;
+    private List<JLabel> heartLabels = new ArrayList<>();
 
 
 
@@ -48,33 +48,48 @@ public class GamingWindow extends JPanel {
         gbc.gridy = 0;
         add(layeredPane, gbc);
 
+        // 1. Панель для score + сердечка
+        JPanel topPanel = new JPanel(new BorderLayout());
+        topPanel.setBackground(Color.BLACK);
+
+// Score зліва
         scoreLabel = new JLabel("Score: 0");
         scoreLabel.setForeground(Color.WHITE);
         scoreLabel.setFont(new Font("Rockwell", Font.BOLD, 30));
+        topPanel.add(scoreLabel, BorderLayout.WEST);
 
-        GridBagConstraints scoreGbc = new GridBagConstraints();
-        scoreGbc.gridx = 0;
-        scoreGbc.gridy = 1;
-        scoreGbc.insets = new Insets(10, 0, 0, 0);
-        add(scoreLabel, scoreGbc);
+// Серця справа
+        JPanel heartsPanel = new JPanel();
+        heartsPanel.setBackground(Color.BLACK);
+        heartsPanel.setBorder(BorderFactory.createEmptyBorder(0, 500, 0, 0));
+        for (int i = 0; i < gameLogic.getPacman().getLives(); i++) {
+            JLabel heart = new JLabel(Resources.heartIcon);
+            heartLabels.add(heart);
+            heartsPanel.add(heart);
+        }
+        topPanel.add(heartsPanel, BorderLayout.EAST);
 
-        livesLabel = new JLabel("Lives: " + gameLogic.getPacman().getLives());
-        livesLabel.setForeground(Color.WHITE);
-        livesLabel.setFont(new Font("Rockwell", Font.BOLD, 30));
+// 2. Додай topPanel (верхній рядок)
+        GridBagConstraints topGbc = new GridBagConstraints();
+        topGbc.gridx = 0;
+        topGbc.gridy = 0;
+        topGbc.insets = new Insets(10, 10, 10, 10);
+        add(topPanel, topGbc);
 
-        GridBagConstraints livesConstraints = new GridBagConstraints();
-        livesConstraints.gridx = 0;
-        livesConstraints.gridy = 1;
-        livesConstraints.insets = new Insets(10, 400, 0, 0); // spacing
-        add(livesLabel, livesConstraints);
+// 3. Змісти ігрове поле вниз (gridy = 1)
+        GridBagConstraints gameGbc = new GridBagConstraints();
+        gameGbc.gridx = 0;
+        gameGbc.gridy = 1;
+        add(layeredPane, gameGbc);
 
 
         gameLoop = new GameLoop(gameLogic, () -> {
             updateGrid();
-            SwingUtilities.invokeLater(() ->
-                    pacmanLabel.setLocation(gameLogic.getPacman().getX(), gameLogic.getPacman().getY()));
+            SwingUtilities.invokeLater(() -> {
+                pacmanLabel.setLocation(gameLogic.getPacman().getX(), gameLogic.getPacman().getY());
+                updateHeartsUI();
+            });
             scoreLabel.setText("Score: " + gameLogic.getScore());
-            livesLabel.setText("Lives: " + gameLogic.getPacman().getLives());
         });
 
         gameLoop.start();
@@ -86,6 +101,13 @@ public class GamingWindow extends JPanel {
         addKeyListener(controller);
         setFocusable(true);
         SwingUtilities.invokeLater(this::requestFocusInWindow);
+    }
+
+    private void updateHeartsUI() {
+        int lives = gameLogic.getPacman().getLives();
+        for (int i = 0; i < heartLabels.size(); i++) {
+            heartLabels.get(i).setVisible(i < lives);
+        }
     }
 
     private JPanel buildGridPanel(int rows, int cols) {

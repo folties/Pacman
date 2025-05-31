@@ -2,6 +2,8 @@ package game;
 
 import model.entities.Pacman;
 
+import javax.swing.*;
+
 public class GameLoop extends Thread {
     private final Logic logic;
     private final Runnable onFrameUpdate;

@@ -21,6 +21,7 @@ public class Resources {
     public static Image optionBackgroundImage;
     public static Image wallImage;
     public static Image foodImage;
+    public static ImageIcon heartIcon;
 
     public static Map<Direction, Image[]> pacmanFrames;
 
@@ -179,6 +180,7 @@ public class Resources {
         optionBackgroundImage = loadImage("materials/optionBackground.png");
         wallImage = loadImage("materials/stone.png");
         foodImage = loadImage("materials/food.png");
+        heartIcon = loadImageIcon("materials/heart.png");
     }
 
     public static String[] loadMapFromFile(String filePath) {
@@ -210,6 +212,14 @@ public class Resources {
             throw new RuntimeException("Image resource not found: " + path);
         }
         return new ImageIcon(url).getImage();
+    }
+
+    private static ImageIcon loadImageIcon(String path) {
+        URL url = Resources.class.getClassLoader().getResource(path);
+        if (url == null) {
+            throw new RuntimeException("Image resource not found: " + path);
+        }
+        return new ImageIcon(url);
     }
 
     public static Image getImageForBlockType(BlockType type) {
