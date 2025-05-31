@@ -7,6 +7,8 @@ import controller.PacmanKeyController;
 import game.GameLoop;
 import game.GhostLoop;
 import game.Logic;
+import game.TimerLoop;
+import main.MainWindow;
 import model.entities.Ghost;
 import model.map.BlockType;
 import util.Resources;
@@ -18,6 +20,7 @@ import java.util.List;
 
 
 public class GamingWindow extends JPanel {
+    private final MainWindow mainWindow;
     private static final int blockSize = 45;
     private final Logic gameLogic;
     private JLabel[][] cells;
@@ -31,9 +34,12 @@ public class GamingWindow extends JPanel {
     private JLabel scoreLabel;
     private List<JLabel> heartLabels = new ArrayList<>();
 
+    private JLabel timeLabel;
+    private TimerLoop timerLoop;
 
 
-    public GamingWindow(int rows, int cols) {
+    public GamingWindow(MainWindow mainWindow, int rows, int cols) {
+        this.mainWindow = mainWindow;
         setLayout(new GridBagLayout());
         setBackground(Color.BLACK);
 
@@ -52,6 +58,13 @@ public class GamingWindow extends JPanel {
         JPanel topPanel = new JPanel(new BorderLayout());
         topPanel.setBackground(Color.BLACK);
 
+        // TIME LABEL
+        timeLabel = new JLabel("Time: 00:00");
+        timeLabel.setForeground(Color.WHITE);
+        timeLabel.setFont(new Font("Rockwell", Font.BOLD, 30));
+        timeLabel.setBorder(BorderFactory.createEmptyBorder(0, 400, 0, 0));
+        topPanel.add(timeLabel, BorderLayout.CENTER);
+
 // Score зліва
         scoreLabel = new JLabel("Score: 0");
         scoreLabel.setForeground(Color.WHITE);
@@ -61,7 +74,7 @@ public class GamingWindow extends JPanel {
 // Серця справа
         JPanel heartsPanel = new JPanel();
         heartsPanel.setBackground(Color.BLACK);
-        heartsPanel.setBorder(BorderFactory.createEmptyBorder(0, 500, 0, 0));
+        heartsPanel.setBorder(BorderFactory.createEmptyBorder(0, 100, 0, 0));
         for (int i = 0; i < gameLogic.getPacman().getLives(); i++) {
             JLabel heart = new JLabel(Resources.heartIcon);
             heartLabels.add(heart);
@@ -90,9 +103,17 @@ public class GamingWindow extends JPanel {
                 updateHeartsUI();
             });
             scoreLabel.setText("Score: " + gameLogic.getScore());
+
+            // 🟥 Перехід на GameEnd
+            if (gameLogic.getPacman().getLives() <= 0) {
+                endGame(); // <- цей метод ми додали вище
+            }
         });
 
         gameLoop.start();
+
+        timerLoop = new TimerLoop(() -> SwingUtilities.invokeLater(this::updateTimer));
+        timerLoop.start();
 
     }
 
@@ -196,6 +217,29 @@ public class GamingWindow extends JPanel {
 
         return layeredPane;
     }
+
+    private void endGame() {
+        if (gameLoop != null) gameLoop.stopLoop();
+        if (timerLoop != null) timerLoop.stopLoop();
+        for (GhostLoop loop : ghostLoops) {
+            loop.stopLoop();
+        }
+
+        SwingUtilities.invokeLater(() -> {
+            mainWindow.showGameEnd(gameLogic.getScore(), timerLoop.getSeconds());
+        });
+    }
+
+
+    private void updateTimer() {
+        int seconds = timerLoop.getSeconds();
+        int minutes = seconds / 60;
+        int secs = seconds % 60;
+        String timeText = String.format("Time: %02d:%02d", minutes, secs);
+        timeLabel.setText(timeText);
+    }
+
+
 
     private void updateGrid() {
         BlockType[][] logicMap = gameLogic.getLogicMap();

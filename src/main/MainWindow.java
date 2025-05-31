@@ -1,6 +1,7 @@
 package main;
 
 import gui.BoardOption;
+import gui.GameEnd;
 import gui.GameMenu;
 import gui.GamingWindow;
 
@@ -24,7 +25,7 @@ public class MainWindow extends JFrame {
 
         GameMenu menuPanel = new GameMenu(this);
         BoardOption optionPanel = new BoardOption(this);
-        GamingWindow gamePanel = new GamingWindow(21, 19);
+        GamingWindow gamePanel = new GamingWindow(this,21, 19);
 
         cardPanel.add(menuPanel, "menu");
         cardPanel.add(optionPanel, "options");
@@ -40,9 +41,15 @@ public class MainWindow extends JFrame {
     }
 
     public void showGame(int rows, int cols) {
-        GamingWindow game = new GamingWindow(rows, cols);
+        GamingWindow game = new GamingWindow(this, rows, cols);
         cardPanel.add(game, "game");
         cardLayout.show(cardPanel, "game");
+        pack();
+    }
+    public void showGameEnd(int finalScore, int finalTime) {
+        GameEnd endPanel = new GameEnd(finalScore, finalTime);
+        cardPanel.add(endPanel, "game_end");
+        cardLayout.show(cardPanel, "game_end");
         pack();
     }
 }

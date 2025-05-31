@@ -35,7 +35,6 @@ public class GhostLoop extends Thread {
                 pacman.resetPosition();
                 logic.resetAllGhosts();
 
-                System.out.println("🟥 Pacman hit by ghost! Lives left: " + pacman.getLives());
             }
 
             SwingUtilities.invokeLater(() -> {
