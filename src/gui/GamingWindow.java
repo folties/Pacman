@@ -37,6 +37,9 @@ public class GamingWindow extends JPanel {
     private JLabel timeLabel;
     private TimerLoop timerLoop;
 
+    private PausePanel pausePanel;
+    private boolean paused = false;
+
 
     public GamingWindow(MainWindow mainWindow, int rows, int cols) {
         this.mainWindow = mainWindow;
@@ -45,6 +48,8 @@ public class GamingWindow extends JPanel {
 
         gameLogic = new Logic(rows, cols);
         initController();
+
+
 
         JPanel gridPanel = buildGridPanel(rows, cols);
         JLayeredPane layeredPane = buildLayeredPane(gridPanel);
@@ -217,6 +222,15 @@ public class GamingWindow extends JPanel {
 
         return layeredPane;
     }
+
+    public void stopAllLoops() {
+        if (gameLoop != null) gameLoop.stopLoop();
+        if (timerLoop != null) timerLoop.stopLoop();
+        for (GhostLoop loop : ghostLoops) {
+            loop.stopLoop();
+        }
+    }
+
 
     private void endGame() {
         if (gameLoop != null) gameLoop.stopLoop();

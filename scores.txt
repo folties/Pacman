@@ -1,0 +1,7 @@
+first,190,15
+super,110,7
+third,210,14
+yeah,640,29
+fifth,480,18
+check,260,12
+lox,210,13

@@ -1,9 +1,6 @@
 package main;
 
-import gui.BoardOption;
-import gui.GameEnd;
-import gui.GameMenu;
-import gui.GamingWindow;
+import gui.*;
 
 import javax.swing.*;
 import java.awt.*;
@@ -37,7 +34,19 @@ public class MainWindow extends JFrame {
     }
 
     public void showScreen(String name) {
+        if (name.equals("menu")) {
+            // Remove any old game panels
+            for (Component comp : cardPanel.getComponents()) {
+                if (comp instanceof GamingWindow gw) {
+                    gw.stopAllLoops();          // 🔒 stop background threads
+                    cardPanel.remove(gw);       // 🗑️ remove it from memory/UI
+                    break;
+                }
+            }
+        }
+
         cardLayout.show(cardPanel, name);
+        pack();
     }
 
     public void showGame(int rows, int cols) {
@@ -47,9 +56,16 @@ public class MainWindow extends JFrame {
         pack();
     }
     public void showGameEnd(int finalScore, int finalTime) {
-        GameEnd endPanel = new GameEnd(finalScore, finalTime);
+        GameEnd endPanel = new GameEnd(this, finalScore, finalTime);
         cardPanel.add(endPanel, "game_end");
         cardLayout.show(cardPanel, "game_end");
         pack();
     }
+    public void showHighScores() {
+        HighScoresPanel panel = new HighScoresPanel(this);
+        cardPanel.add(panel, "highscores");
+        cardLayout.show(cardPanel, "highscores");
+        pack();
+    }
+
 }

@@ -25,7 +25,7 @@ public class GameMenu extends JPanel {
         add(exitButton);
 
         newGameButton.addActionListener(e -> mainWindow.showScreen("options"));
-        highScoresButton.addActionListener(e -> JOptionPane.showMessageDialog(this, "High Scores Clicked"));
+        highScoresButton.addActionListener(e -> mainWindow.showHighScores());
         exitButton.addActionListener(e -> System.exit(0));
     }
 

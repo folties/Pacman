@@ -1,5 +1,6 @@
 package gui;
 
+import main.MainWindow;
 import util.ScoreEntry;
 import util.ScoreSaver;
 
@@ -7,7 +8,10 @@ import javax.swing.*;
 import java.awt.*;
 
 public class GameEnd extends JPanel {
-    public GameEnd(int finalScore, int finalSeconds) {
+    private final MainWindow mainWindow;
+
+    public GameEnd(MainWindow mainWindow, int finalScore, int finalSeconds) {
+        this.mainWindow = mainWindow;
         setLayout(new BorderLayout());
         setBackground(Color.BLACK);
 
@@ -38,8 +42,7 @@ public class GameEnd extends JPanel {
         saveButton.addActionListener(e -> {
             String name = nameField.getText().trim();
             if (!name.isEmpty()) {
-                ScoreEntry entry = new ScoreEntry(name, finalScore, finalSeconds);
-                ScoreSaver.saveScore(entry);
+                ScoreSaver.saveScoreText(name, finalScore, finalSeconds); // ✅ TXT only
                 saveButton.setEnabled(false);
                 nameField.setEditable(false);
                 JOptionPane.showMessageDialog(this, "Score saved!");
@@ -51,6 +54,16 @@ public class GameEnd extends JPanel {
         centerPanel.add(scoreLabel);
         centerPanel.add(timeLabel);
         centerPanel.add(formPanel);
+        JButton returnButton = new JButton("Return to Menu");
+        returnButton.setFont(new Font("Rockwell", Font.PLAIN, 18));
+        returnButton.addActionListener(e -> mainWindow.showScreen("menu"));
+
+        JPanel bottomPanel = new JPanel();
+        bottomPanel.setBackground(Color.BLACK);
+        bottomPanel.add(returnButton);
+
+        add(bottomPanel, BorderLayout.SOUTH);
+
 
         add(gameOverLabel, BorderLayout.NORTH);
         add(centerPanel, BorderLayout.CENTER);
