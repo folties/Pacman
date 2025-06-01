@@ -5,43 +5,50 @@ import util.Direction;
 
 import java.awt.*;
 
+/**
+ * Represents the player character (Pacman) with movement logic,
+ * collision detection, food collection, and portal teleportation.
+ */
 public class Pacman extends Entity implements Walkable {
-    private Direction nextDirection;
+
+    // === Constants ===
+    private static final int blockSize = 45;
+
+    // === State ===
+    private int x, y;
     private int lives = 3;
     private int score = 0;
-    private int x, y; // pixel positions
-    private final int blockSize = 45; // adjust if needed
+    private Direction nextDirection;
+
+    // === Portals ===
     private Point leftPortalPos;
     private Point rightPortalPos;
-    private final int startRow, startCol;
 
+    // === Initial Position ===
+    private final int startRow;
+    private final int startCol;
 
+    // === Constructor ===
     public Pacman(int row, int col) {
-        super(row, col, Direction.LEFT, 3);
-        this.nextDirection = Direction.LEFT;
+        super(row, col, Direction.LEFT, 3); // default speed = 3
         this.startRow = row;
         this.startCol = col;
-        this.x = col * blockSize;
-        this.y = row * blockSize;
-    }
-
-    public void resetPosition() {
-        this.row = startRow;
-        this.col = startCol;
-        this.x = col * blockSize;
-        this.y = row * blockSize;
-        this.direction = Direction.LEFT;
         this.nextDirection = Direction.LEFT;
+        this.x = col * blockSize;
+        this.y = row * blockSize;
     }
 
+    // === Movement and Game Logic ===
+
+    /** Called every frame to update Pacman's movement and interactions. */
     public void stepMove(BlockType[][] logicMap) {
+        // At tile center: update direction if nextDirection is valid
         if (x % blockSize == 0 && y % blockSize == 0) {
             row = y / blockSize;
             col = x / blockSize;
 
             if (nextDirection != null) {
-                int tryRow = row;
-                int tryCol = col;
+                int tryRow = row, tryCol = col;
                 switch (nextDirection) {
                     case UP -> tryRow--;
                     case DOWN -> tryRow++;
@@ -54,9 +61,10 @@ public class Pacman extends Entity implements Walkable {
             }
         }
 
+        // Calculate movement
         int dx = 0, dy = 0;
         switch (direction) {
-            case UP -> dy =- speed;
+            case UP -> dy = -speed;
             case DOWN -> dy = speed;
             case LEFT -> dx = -speed;
             case RIGHT -> dx = speed;
@@ -65,6 +73,7 @@ public class Pacman extends Entity implements Walkable {
         int nextX = x + dx;
         int nextY = y + dy;
 
+        // Move if no wall ahead
         if (canMoveTo(nextX, nextY, logicMap)) {
             x = nextX;
             y = nextY;
@@ -73,34 +82,35 @@ public class Pacman extends Entity implements Walkable {
                 row = y / blockSize;
                 col = x / blockSize;
 
+                // Collect food
                 if (logicMap[row][col] == BlockType.FOOD) {
                     score += 10;
                     logicMap[row][col] = BlockType.EMPTY;
                 }
-                // ⬇️ ADD THIS BLOCK HERE:
+
+                // Portal teleportation
                 if (logicMap[row][col] == BlockType.LEFT_PORTAL && rightPortalPos != null) {
-                    x = rightPortalPos.x * blockSize;
-                    y = rightPortalPos.y * blockSize;
-                    row = rightPortalPos.y;
-                    col = rightPortalPos.x;
+                    teleportTo(rightPortalPos);
                 } else if (logicMap[row][col] == BlockType.RIGHT_PORTAL && leftPortalPos != null) {
-                    x = leftPortalPos.x * blockSize;
-                    y = leftPortalPos.y * blockSize;
-                    row = leftPortalPos.y;
-                    col = leftPortalPos.x;
+                    teleportTo(leftPortalPos);
                 }
             }
         }
     }
 
+    private void teleportTo(Point portalPos) {
+        x = portalPos.x * blockSize;
+        y = portalPos.y * blockSize;
+        row = portalPos.y;
+        col = portalPos.x;
+    }
+
     private boolean canMoveTo(int x, int y, BlockType[][] logicMap) {
-        // Four corners of Pacman
         int left = x;
         int right = x + blockSize - 1;
         int top = y;
         int bottom = y + blockSize - 1;
 
-        // Convert each corner to a row/col and check
         return isWalkable(logicMap, top / blockSize, left / blockSize) &&
                 isWalkable(logicMap, top / blockSize, right / blockSize) &&
                 isWalkable(logicMap, bottom / blockSize, left / blockSize) &&
@@ -112,25 +122,39 @@ public class Pacman extends Entity implements Walkable {
                 c >= 0 && c < logicMap[0].length &&
                 logicMap[r][c] != BlockType.WALL;
     }
+
+    // === Game State Management ===
+
     public void loseLife() {
         lives--;
     }
 
-    @Override public int getRow() { return row; }
-    @Override public int getCol() { return col; }
-    @Override public Direction getDirection() { return direction; }
-    @Override public void setDirection(Direction direction) { this.nextDirection = direction; }
+    public void resetPosition() {
+        this.row = startRow;
+        this.col = startCol;
+        this.x = col * blockSize;
+        this.y = row * blockSize;
+        this.direction = Direction.LEFT;
+        this.nextDirection = Direction.LEFT;
+    }
 
-    public int getSpeed() { return speed; }
-    public int getLives() { return lives; }
-    public int getScore() { return score; }
-    public int getX() { return x; }
-    public int getY() { return y; }
     public void setPortalPositions(Point left, Point right) {
         this.leftPortalPos = left;
         this.rightPortalPos = right;
     }
 
+    // === Getters ===
 
 
+    @Override
+    public Direction getDirection() { return direction; }
+    @Override
+    public void setDirection(Direction direction) { this.nextDirection = direction; }
+    @Override
+    public int getX() { return x; }
+    @Override
+    public int getY() { return y; }
+    public int getLives() { return lives; }
+    public int getScore() { return score; }
+    public int getSpeed() { return speed; }
 }

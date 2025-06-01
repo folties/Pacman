@@ -74,7 +74,6 @@ public class GameEnd extends JPanel {
                 ScoreSaver.saveScoreText(name, finalScore, finalSeconds); // ✅ TXT only
                 saveButton.setEnabled(false);
                 nameField.setEditable(false);
-                JOptionPane.showMessageDialog(this, "Score saved!");
             }
         });
 

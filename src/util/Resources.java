@@ -37,6 +37,13 @@ public class Resources {
 
 
     public static void loadResources() {
+        menuBackgroundImage = loadImage("materials/menuBackground.png");
+        optionBackgroundImage = loadImage("materials/optionBackground.png");
+        pauseBackgroundImage = loadImage("materials/pauseBackground.png");
+        endBackgroundImage = loadImage("materials/endBackground.png");
+        wallImage = loadImage("materials/stone.png");
+        foodImage = loadImage("materials/food.png");
+        heartIcon = loadImageIcon("materials/heart.png");
 
         pacmanFrames = new HashMap<>();
 
@@ -175,16 +182,6 @@ public class Resources {
                 loadImage("materials/portals/right/rightPortal8.png"),
                 loadImage("materials/portals/right/rightPortal9.png")
         };
-
-
-
-        menuBackgroundImage = loadImage("materials/menuBackground.png");
-        optionBackgroundImage = loadImage("materials/optionBackground.png");
-        pauseBackgroundImage = loadImage("materials/pauseBackground.png");
-        endBackgroundImage = loadImage("materials/endBackground.png");
-        wallImage = loadImage("materials/stone.png");
-        foodImage = loadImage("materials/food.png");
-        heartIcon = loadImageIcon("materials/heart.png");
     }
 
     public static String[] loadMapFromFile(String filePath) {

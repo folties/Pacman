@@ -1,7 +1,6 @@
 package gui;
 
 import main.MainWindow;
-import model.map.MapType;
 import util.ScoreEntry;
 import util.ScoreSaver;
 

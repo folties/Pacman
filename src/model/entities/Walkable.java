@@ -1,11 +1,12 @@
 package model.entities;
 
+import model.map.BlockType;
 import util.Direction;
 
 public interface Walkable {
-
-    int getRow();
-    int getCol();
+    void stepMove(BlockType[][] logicMap);
+    int getX();
+    int getY();
     Direction getDirection();
     void setDirection(Direction direction);
 }

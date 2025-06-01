@@ -4,80 +4,78 @@ import model.map.BlockType;
 import util.Direction;
 
 import java.awt.*;
-import java.util.ArrayList;
-import java.util.Collections;
+import java.util.*;
 import java.util.List;
-import java.util.Map;
 
-public class Ghost extends Entity {
-    private final int blockSize = 45;
-    private int x, y;
-    private Point leftPortalPos;
-    private Point rightPortalPos;
-    private Map<Direction, Image[]> animationFrames;
+/**
+ * Represents a single ghost entity in the game.
+ * Handles movement logic, portal traversal, and animation direction.
+ */
+public class Ghost extends Entity implements Walkable {
 
+    // === Constants & Start Position ===
+    private static final int blockSize = 45;
     private final int startRow, startCol;
 
+    // === Position and Direction ===
+    private int x, y;
+
+    // === Portals ===
+    private Point leftPortalPos;
+    private Point rightPortalPos;
+
+    // === Animation ===
+    private Map<Direction, Image[]> animationFrames;
+
+    // === Constructor ===
     public Ghost(int row, int col) {
-        super(row, col, Direction.UP, 15);
+        super(row, col, Direction.DOWN, 45); // Initial direction and speed
         this.startRow = row;
         this.startCol = col;
         this.x = col * blockSize;
         this.y = row * blockSize;
     }
 
+    // === Movement Logic ===
     public void stepMove(BlockType[][] logicMap) {
         if (x % blockSize == 0 && y % blockSize == 0) {
             row = y / blockSize;
             col = x / blockSize;
 
+            // Handle portals
             if (logicMap[row][col] == BlockType.LEFT_PORTAL && rightPortalPos != null) {
-                x = rightPortalPos.x * blockSize;
-                y = rightPortalPos.y * blockSize;
-                row = rightPortalPos.y;
-                col = rightPortalPos.x;
+                teleportTo(rightPortalPos);
             } else if (logicMap[row][col] == BlockType.RIGHT_PORTAL && leftPortalPos != null) {
-                x = leftPortalPos.x * blockSize;
-                y = leftPortalPos.y * blockSize;
-                row = leftPortalPos.y;
-                col = leftPortalPos.x;
+                teleportTo(leftPortalPos);
             }
 
+            // Determine valid directions (excluding reverse)
             List<Direction> validDirs = new ArrayList<>();
-
             for (Direction dir : Direction.values()) {
-                if (dir == getOpposite(direction)) continue; // skip reverse
+                if (dir == getOpposite(direction)) continue;
 
                 int tryRow = row + (dir == Direction.UP ? -1 : dir == Direction.DOWN ? 1 : 0);
                 int tryCol = col + (dir == Direction.LEFT ? -1 : dir == Direction.RIGHT ? 1 : 0);
 
-                int px = tryCol * blockSize;
-                int py = tryRow * blockSize;
-
-                if (canMoveTo(px, py, logicMap)) {
+                if (canMoveTo(tryCol * blockSize, tryRow * blockSize, logicMap)) {
                     validDirs.add(dir);
                 }
             }
 
+            // Choose new direction at intersections or dead ends
             if (!validDirs.isEmpty()) {
-                // 💡 Randomly choose a new direction at intersection — with some probability
-                if (validDirs.size() > 1 || !isWalkable(logicMap, row + (direction == Direction.UP ? -1 : direction == Direction.DOWN ? 1 : 0),
-                        col + (direction == Direction.LEFT ? -1 : direction == Direction.RIGHT ? 1 : 0))) {
+                boolean atIntersection = validDirs.size() > 1;
+                boolean blockedAhead = !isWalkable(logicMap, row + deltaRow(direction), col + deltaCol(direction));
+                if (atIntersection || blockedAhead) {
                     Collections.shuffle(validDirs);
                     direction = validDirs.get(0);
                 }
             }
         }
 
-
-        // Рух на кожному кадрі
-        int dx = 0, dy = 0;
-        switch (direction) {
-            case UP -> dy = -speed;
-            case DOWN -> dy = speed;
-            case LEFT -> dx = -speed;
-            case RIGHT -> dx = speed;
-        }
+        // Move by current direction
+        int dx = deltaCol(direction) * speed;
+        int dy = deltaRow(direction) * speed;
 
         int nextX = x + dx;
         int nextY = y + dy;
@@ -90,7 +88,30 @@ public class Ghost extends Entity {
         }
     }
 
+    private void teleportTo(Point portalPos) {
+        this.x = portalPos.x * blockSize;
+        this.y = portalPos.y * blockSize;
+        this.row = portalPos.y;
+        this.col = portalPos.x;
+    }
 
+    // === Movement Utilities ===
+
+    private int deltaRow(Direction dir) {
+        return switch (dir) {
+            case UP -> -1;
+            case DOWN -> 1;
+            default -> 0;
+        };
+    }
+
+    private int deltaCol(Direction dir) {
+        return switch (dir) {
+            case LEFT -> -1;
+            case RIGHT -> 1;
+            default -> 0;
+        };
+    }
 
     private Direction getOpposite(Direction dir) {
         return switch (dir) {
@@ -99,14 +120,6 @@ public class Ghost extends Entity {
             case LEFT -> Direction.RIGHT;
             case RIGHT -> Direction.LEFT;
         };
-    }
-
-    public void resetPosition() {
-        this.row = startRow;
-        this.col = startCol;
-        this.x = col * blockSize;
-        this.y = row * blockSize;
-        this.direction = Direction.UP; // або початковий напрям
     }
 
     private boolean canMoveTo(int x, int y, BlockType[][] logicMap) {
@@ -127,20 +140,47 @@ public class Ghost extends Entity {
                 logicMap[r][c] != BlockType.WALL;
     }
 
-    public int getX() { return x; }
-    public int getY() { return y; }
+    // === State Reset ===
+
+    public void resetPosition() {
+        this.row = startRow;
+        this.col = startCol;
+        this.x = col * blockSize;
+        this.y = row * blockSize;
+        this.direction = Direction.DOWN;
+    }
+
+    // === Setters and Getters ===
+
     public void setPortalPositions(Point left, Point right) {
         this.leftPortalPos = left;
         this.rightPortalPos = right;
     }
+
     public void setAnimationFrames(Map<Direction, Image[]> frames) {
         this.animationFrames = frames;
     }
+
     public Image[] getFramesForDirection(Direction direction) {
         return animationFrames.get(direction);
     }
-    public Direction getDirection() {
+    public void setSpeed(int speed) {
+        this.speed = speed;
+    }
+
+    public int getSpeed() { return speed; }
+
+
+
+    @Override
+    public int getX() { return x; }
+    @Override
+    public int getY() { return y; }
+
+    @Override public Direction getDirection() {
         return direction;
     }
+    @Override public void setDirection(Direction direction) {
+        this.direction = direction; }
 
 }

@@ -25,11 +25,11 @@ public class PausePanel extends JPanel {
         JButton quitButton = createPauseButton("Quit to Menu");
         quitButton.addActionListener(e -> onQuit.run());
 
-        add(Box.createVerticalStrut(150));
+        add(Box.createVerticalStrut(200));
         add(title);
-        add(Box.createVerticalStrut(50));
+        add(Box.createVerticalStrut(60));
         add(continueButton);
-        add(Box.createVerticalStrut(20));
+        add(Box.createVerticalStrut(30));
         add(quitButton);
     }
 

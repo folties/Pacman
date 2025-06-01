@@ -12,3 +12,7 @@ idiot,0,0
 super,0,0
 very good,0,0
 no way,180,14
+super,1840,106
+sorry,1080,35
+no i lov eit,900,60
+check checksssssssssssssssssssssssssss,270,9

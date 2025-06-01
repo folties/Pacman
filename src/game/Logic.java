@@ -1,84 +1,114 @@
 package game;
 
+import gui.GamingWindow;
 import model.entities.Ghost;
+import model.entities.Pacman;
 import model.map.BlockType;
 import model.map.MapDesign;
 import model.map.MapType;
-import model.entities.Pacman;
-import util.Direction;
 import util.Resources;
 
 import java.awt.*;
 import java.util.ArrayList;
 import java.util.List;
 
+/**
+ * Logic handles core game logic such as initializing map elements,
+ * controlling Pacman's movement, and resetting ghost states.
+ */
 public class Logic {
+
+    // === Map and Entities ===
     private final BlockType[][] logicMap;
     private Pacman pacman;
-    private List<Ghost> ghosts;
+    private final List<Ghost> ghosts = new ArrayList<>();
 
+    // === Portals ===
     private Point leftPortalPos;
     private Point rightPortalPos;
 
+    // === Constructor ===
     public Logic(int rows, int cols) {
-        MapType mapType = (rows == 17 && cols == 15) ? MapType.SMALL :
-                (rows == 19 && cols == 17) ? MapType.MEDIUM : MapType.LARGE;
-
+        MapType mapType = determineMapType(rows, cols);
         String[] currentBlockMap = Resources.loadMapType(mapType);
         logicMap = MapDesign.loadLogicMap(currentBlockMap);
-        ghosts = new ArrayList<>();
 
-        // 🔁 Перше проходження — знайти портали і Pacman
-        for (int r = 0; r < currentBlockMap.length; r++) {
-            for (int c = 0; c < currentBlockMap[r].length(); c++) {
-                char cell = currentBlockMap[r].charAt(c);
-                if (cell == 'I') {
-                    pacman = new Pacman(r, c);
-                } else if (cell == 'L') {
-                    leftPortalPos = new Point(c, r);
-                } else if (cell == 'R') {
-                    rightPortalPos = new Point(c, r);
-                }
-            }
-        }
+        initializePacmanAndPortals(currentBlockMap);
+        initializeGhosts(currentBlockMap);
 
-        // 🔁 Друге проходження — створити привидів після того, як координати порталів відомі
-        for (int r = 0; r < currentBlockMap.length; r++) {
-            for (int c = 0; c < currentBlockMap[r].length(); c++) {
-                char cell = currentBlockMap[r].charAt(c);
-                Ghost ghost = null;
-
-                if (cell == 'r') {
-                    ghost = new Ghost(r, c);
-                    ghost.setAnimationFrames(Resources.redGhostFrames); // the map
-                } else if (cell == 'p') {
-                    ghost = new Ghost(r, c);
-                    ghost.setAnimationFrames(Resources.pinkGhostFrames); // the map
-                } else if (cell == 'o') {
-                    ghost = new Ghost(r, c);
-                    ghost.setAnimationFrames(Resources.orangeGhostFrames);
-                } else if (cell == 'b') {
-                    ghost = new Ghost(r, c);
-                    ghost.setAnimationFrames(Resources.blueGhostFrames);
-                }
-
-                if (ghost != null) {
-                    ghost.setPortalPositions(leftPortalPos, rightPortalPos);
-                    ghosts.add(ghost);
-                }
-            }
-        }
-
-        // ✅ тільки тепер Pacman отримує портали
+        // Assign portal positions to Pacman
         if (pacman != null) {
             pacman.setPortalPositions(leftPortalPos, rightPortalPos);
         }
     }
 
+    // === Public Methods ===
+
+    /** Updates game state each frame (Pacman only; ghosts handled separately). */
     public void update() {
         pacman.stepMove(logicMap);
+
+        if (isAllFoodEaten()) {
+            startNextLevel();
+        }
     }
 
+    public void startNextLevel() {
+        // Refill all FOOD blocks
+        for (int r = 0; r < logicMap.length; r++) {
+            for (int c = 0; c < logicMap[0].length; c++) {
+                if (logicMap[r][c] == BlockType.EMPTY) {
+                    logicMap[r][c] = BlockType.FOOD;
+                }
+            }
+        }
+
+        // Reset Pacman and Ghosts
+        pacman.resetPosition();
+        for (Ghost ghost : ghosts) {
+            ghost.resetPosition();
+            ghost.setSpeed(ghost.getSpeed() + 1); // Increase ghost speed
+        }
+    }
+
+
+
+    public void checkGhostCollision(Ghost ghost, GamingWindow window) {
+        Pacman pacman = getPacman();
+
+        Rectangle ghostRect = new Rectangle(ghost.getX(), ghost.getY(), 45, 45);
+        Rectangle pacmanRect = new Rectangle(pacman.getX(), pacman.getY(), 45, 45);
+
+        if (ghostRect.intersects(pacmanRect)) {
+            pacman.loseLife();
+            pacman.resetPosition();
+            resetAllGhosts();
+
+            if (pacman.getLives() > 0) {
+                window.showCountdownThenResume();
+            }
+        }
+    }
+
+    public boolean isAllFoodEaten() {
+        for (BlockType[] row : logicMap) {
+            for (BlockType cell : row) {
+                if (cell == BlockType.FOOD) {
+                    return false;
+                }
+            }
+        }
+        return true;
+    }
+
+
+    public void resetAllGhosts() {
+        for (Ghost ghost : ghosts) {
+            ghost.resetPosition();
+        }
+    }
+
+    // === Getters ===
     public Pacman getPacman() {
         return pacman;
     }
@@ -98,16 +128,57 @@ public class Logic {
     public Point getRightPortalPos() {
         return rightPortalPos;
     }
+
     public int getScore() {
         return pacman.getScore();
     }
-    public void resetAllGhosts() {
-        for (Ghost ghost : ghosts) {
-            ghost.resetPosition();
+
+    // === Private Initialization ===
+
+    private MapType determineMapType(int rows, int cols) {
+        return (rows == 17 && cols == 15) ? MapType.SMALL :
+                (rows == 19 && cols == 17) ? MapType.MEDIUM :
+                        MapType.LARGE;
+    }
+
+    private void initializePacmanAndPortals(String[] map) {
+        for (int r = 0; r < map.length; r++) {
+            for (int c = 0; c < map[r].length(); c++) {
+                char cell = map[r].charAt(c);
+                switch (cell) {
+                    case 'I' -> pacman = new Pacman(r, c);
+                    case 'L' -> leftPortalPos = new Point(c, r);
+                    case 'R' -> rightPortalPos = new Point(c, r);
+                }
+            }
         }
     }
 
-
-
+    private void initializeGhosts(String[] map) {
+        for (int r = 0; r < map.length; r++) {
+            for (int c = 0; c < map[r].length(); c++) {
+                char cell = map[r].charAt(c);
+                Ghost ghost = null;
+                if (cell == 'r') {
+                    ghost = new Ghost(r, c);
+                    ghost.setAnimationFrames(Resources.redGhostFrames);
+                } else if (cell == 'p') {
+                    ghost = new Ghost(r, c);
+                    ghost.setAnimationFrames(Resources.pinkGhostFrames);
+                } else if (cell == 'o') {
+                    ghost = new Ghost(r, c);
+                    ghost.setAnimationFrames(Resources.orangeGhostFrames);
+                } else if (cell == 'b') {
+                    ghost = new Ghost(r, c);
+                    ghost.setAnimationFrames(Resources.blueGhostFrames);
+                }
+                if (ghost != null) {
+                    ghost.setPortalPositions(leftPortalPos, rightPortalPos);
+                    ghosts.add(ghost);
+                }
+            }
+        }
+    }
 }
+
 
