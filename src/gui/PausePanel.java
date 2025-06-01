@@ -11,11 +11,12 @@ public class PausePanel extends JPanel {
     public PausePanel(Runnable onContinue, Runnable onQuit) {
         backgroundImage = Resources.pauseBackgroundImage;
         setLayout(new BoxLayout(this, BoxLayout.Y_AXIS));
+        setOpaque(false); // let paintComponent show through
         setBackground(Color.BLACK);
 
         JLabel title = new JLabel("PAUSED");
-        title.setFont(new Font("Rockwell", Font.BOLD, 60));
-        title.setForeground(Color.WHITE);
+        title.setFont(new Font("Rockwell", Font.BOLD, 100));
+        title.setForeground(new Color(80, 0, 0));
         title.setAlignmentX(Component.CENTER_ALIGNMENT);
 
         JButton continueButton = createPauseButton("Continue");

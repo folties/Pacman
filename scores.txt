@@ -11,3 +11,4 @@ no way you will doing this twive,0,0
 idiot,0,0
 super,0,0
 very good,0,0
+no way,180,14
