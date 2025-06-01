@@ -25,6 +25,7 @@ public class ScoreSaver {
         } catch (IOException e) {
             // silently ignore if file doesn't exist
         }
+
         return lines;
     }
 }

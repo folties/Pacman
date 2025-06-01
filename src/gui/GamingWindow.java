@@ -11,10 +11,13 @@ import game.TimerLoop;
 import main.MainWindow;
 import model.entities.Ghost;
 import model.map.BlockType;
+import model.map.MapType;
 import util.Resources;
 
 import javax.swing.*;
 import java.awt.*;
+import java.awt.event.KeyAdapter;
+import java.awt.event.KeyEvent;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -37,19 +40,38 @@ public class GamingWindow extends JPanel {
     private JLabel timeLabel;
     private TimerLoop timerLoop;
 
+    private JPanel topPanel;
+
     private PausePanel pausePanel;
     private boolean paused = false;
+    private boolean gameEnded = false;
 
 
-    public GamingWindow(MainWindow mainWindow, int rows, int cols) {
+
+    public GamingWindow(MainWindow mainWindow, MapType mapType) {
         this.mainWindow = mainWindow;
         setLayout(new GridBagLayout());
         setBackground(Color.BLACK);
 
+        int rows, cols;
+        switch (mapType) {
+            case SMALL -> {
+                rows = 17;
+                cols = 15;
+            }
+            case MEDIUM -> {
+                rows = 19;
+                cols = 17;
+            }
+            case LARGE -> {
+                rows = 21;
+                cols = 19;
+            }
+            default -> throw new IllegalArgumentException("Unknown map type: " + mapType);
+        }
+
         gameLogic = new Logic(rows, cols);
         initController();
-
-
 
         JPanel gridPanel = buildGridPanel(rows, cols);
         JLayeredPane layeredPane = buildLayeredPane(gridPanel);
@@ -60,7 +82,7 @@ public class GamingWindow extends JPanel {
         add(layeredPane, gbc);
 
         // 1. Панель для score + сердечка
-        JPanel topPanel = new JPanel(new BorderLayout());
+        topPanel = new JPanel(new BorderLayout());
         topPanel.setBackground(Color.BLACK);
 
         // TIME LABEL
@@ -100,19 +122,13 @@ public class GamingWindow extends JPanel {
         gameGbc.gridy = 1;
         add(layeredPane, gameGbc);
 
-
-        gameLoop = new GameLoop(gameLogic, () -> {
+        gameLoop = new GameLoop(gameLogic, this, () -> {
             updateGrid();
             SwingUtilities.invokeLater(() -> {
                 pacmanLabel.setLocation(gameLogic.getPacman().getX(), gameLogic.getPacman().getY());
                 updateHeartsUI();
             });
             scoreLabel.setText("Score: " + gameLogic.getScore());
-
-            // 🟥 Перехід на GameEnd
-            if (gameLogic.getPacman().getLives() <= 0) {
-                endGame(); // <- цей метод ми додали вище
-            }
         });
 
         gameLoop.start();
@@ -127,6 +143,15 @@ public class GamingWindow extends JPanel {
         addKeyListener(controller);
         setFocusable(true);
         SwingUtilities.invokeLater(this::requestFocusInWindow);
+
+        addKeyListener(new KeyAdapter() {
+            @Override
+            public void keyPressed(KeyEvent e) {
+                if (e.getKeyCode() == KeyEvent.VK_ESCAPE) {
+                    togglePause();
+                }
+            }
+        });
     }
 
     private void updateHeartsUI() {
@@ -164,6 +189,7 @@ public class GamingWindow extends JPanel {
                 gridPanel.add(cell);
             }
         }
+
         return gridPanel;
     }
 
@@ -220,6 +246,14 @@ public class GamingWindow extends JPanel {
         leftAnim.start();
         rightAnim.start();
 
+        pausePanel = new PausePanel(this::resumeGame, () -> {
+            stopAllLoops();
+            mainWindow.showGameMenu();
+        });
+        pausePanel.setBounds(0, 0, width, height);
+        pausePanel.setVisible(false);
+        layeredPane.add(pausePanel, Integer.valueOf(5)); // top layer
+
         return layeredPane;
     }
 
@@ -232,13 +266,11 @@ public class GamingWindow extends JPanel {
     }
 
 
-    private void endGame() {
-        if (gameLoop != null) gameLoop.stopLoop();
-        if (timerLoop != null) timerLoop.stopLoop();
-        for (GhostLoop loop : ghostLoops) {
-            loop.stopLoop();
-        }
+    public void endGame() {
+        if (gameEnded) return;
+        gameEnded = true;
 
+        stopAllLoops();
         SwingUtilities.invokeLater(() -> {
             mainWindow.showGameEnd(gameLogic.getScore(), timerLoop.getSeconds());
         });
@@ -253,6 +285,43 @@ public class GamingWindow extends JPanel {
         timeLabel.setText(timeText);
     }
 
+    private void togglePause() {
+        paused = !paused;
+        if (paused) {
+            // 🛑 FIRST pause threads
+            System.out.println("Pausing all loops...");
+            gameLoop.pause();
+            timerLoop.pause();
+            for (GhostLoop g : ghostLoops) {
+                g.pause();
+                System.out.println("Paused ghost: " + g);
+            }
+        } else {
+            System.out.println("Resuming all loops...");
+            gameLoop.resumeLoop();
+            timerLoop.resumeLoop();
+            for (GhostLoop g : ghostLoops) {
+                System.out.println("Resuming ghost...");
+                g.resumeLoop();
+            }
+        }
+
+        // ✅ THEN update the UI
+        pausePanel.setVisible(paused);
+        topPanel.setVisible(!paused);
+    }
+
+
+
+    private void resumeGame() {
+        paused = false;
+        pausePanel.setVisible(false);
+        topPanel.setVisible(true); // ✅ show the top panel again
+
+        gameLoop.resumeLoop();
+        timerLoop.resumeLoop();
+        for (GhostLoop g : ghostLoops) g.resumeLoop();
+    }
 
 
     private void updateGrid() {

@@ -24,7 +24,7 @@ public class GameMenu extends JPanel {
         add(Box.createVerticalStrut(10));
         add(exitButton);
 
-        newGameButton.addActionListener(e -> mainWindow.showScreen("options"));
+        newGameButton.addActionListener(e -> mainWindow.showBoardOption());
         highScoresButton.addActionListener(e -> mainWindow.showHighScores());
         exitButton.addActionListener(e -> System.exit(0));
     }
@@ -36,7 +36,7 @@ public class GameMenu extends JPanel {
 
     private JButton createMenuButton(String text) {
         JButton button = new JButton(text);
-        button.setFont(new Font("TOYZ", Font.BOLD, 30));
+        button.setFont(new Font("Rockwell", Font.BOLD, 30));
         button.setAlignmentX(Component.CENTER_ALIGNMENT);
         button.setBackground(Color.black);
         button.setBorder(new LineBorder(new Color(200,100,10), 1));

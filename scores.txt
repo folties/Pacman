@@ -5,3 +5,9 @@ yeah,640,29
 fifth,480,18
 check,260,12
 lox,210,13
+sorry,590,23
+
+no way you will doing this twive,0,0
+idiot,0,0
+super,0,0
+very good,0,0

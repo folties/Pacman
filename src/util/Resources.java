@@ -22,6 +22,8 @@ public class Resources {
     public static Image wallImage;
     public static Image foodImage;
     public static ImageIcon heartIcon;
+    public static Image pauseBackgroundImage;
+    public static Image endBackgroundImage;
 
     public static Map<Direction, Image[]> pacmanFrames;
 
@@ -178,6 +180,8 @@ public class Resources {
 
         menuBackgroundImage = loadImage("materials/menuBackground.png");
         optionBackgroundImage = loadImage("materials/optionBackground.png");
+        pauseBackgroundImage = loadImage("materials/pauseBackground.png");
+        endBackgroundImage = loadImage("materials/endBackground.png");
         wallImage = loadImage("materials/stone.png");
         foodImage = loadImage("materials/food.png");
         heartIcon = loadImageIcon("materials/heart.png");

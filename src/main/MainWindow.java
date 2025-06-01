@@ -1,6 +1,7 @@
 package main;
 
 import gui.*;
+import model.map.MapType;
 
 import javax.swing.*;
 import java.awt.*;
@@ -20,41 +21,61 @@ public class MainWindow extends JFrame {
         cardLayout = new CardLayout();
         cardPanel = new JPanel(cardLayout);
 
-        GameMenu menuPanel = new GameMenu(this);
-        BoardOption optionPanel = new BoardOption(this);
-        GamingWindow gamePanel = new GamingWindow(this,21, 19);
-
-        cardPanel.add(menuPanel, "menu");
-        cardPanel.add(optionPanel, "options");
-        cardPanel.add(gamePanel, "game");
+        showGameMenu();
 
         this.setContentPane(cardPanel);
         this.setVisible(true);
 
     }
 
-    public void showScreen(String name) {
-        if (name.equals("menu")) {
-            // Remove any old game panels
-            for (Component comp : cardPanel.getComponents()) {
-                if (comp instanceof GamingWindow gw) {
-                    gw.stopAllLoops();          // 🔒 stop background threads
-                    cardPanel.remove(gw);       // 🗑️ remove it from memory/UI
-                    break;
-                }
+    public void showGameMenu() {
+        // ✅ Always clean old game first
+        for (Component comp : cardPanel.getComponents()) {
+            if (comp instanceof GamingWindow gw) {
+                gw.stopAllLoops();
+                cardPanel.remove(gw);
+                break;
             }
         }
 
-        cardLayout.show(cardPanel, name);
+        GameMenu menuPanel = new GameMenu(this);
+        cardPanel.add(menuPanel, "game_menu");
+        cardLayout.show(cardPanel, "game_menu");
         pack();
     }
 
-    public void showGame(int rows, int cols) {
-        GamingWindow game = new GamingWindow(this, rows, cols);
+    public void showBoardOption() {
+        // ✅ Always clean old game first
+        for (Component comp : cardPanel.getComponents()) {
+            if (comp instanceof GamingWindow gw) {
+                gw.stopAllLoops();
+                cardPanel.remove(gw);
+                break;
+            }
+        }
+
+        BoardOption optionPanel = new BoardOption(this);
+        cardPanel.add(optionPanel, "options");
+        cardLayout.show(cardPanel, "options");
+        pack();
+    }
+
+    public void showGame(MapType mapType) {
+        // ✅ Always clean old game first
+        for (Component comp : cardPanel.getComponents()) {
+            if (comp instanceof GamingWindow gw) {
+                gw.stopAllLoops();
+                cardPanel.remove(gw);
+                break;
+            }
+        }
+
+        GamingWindow game = new GamingWindow(this, mapType);
         cardPanel.add(game, "game");
         cardLayout.show(cardPanel, "game");
         pack();
     }
+
     public void showGameEnd(int finalScore, int finalTime) {
         GameEnd endPanel = new GameEnd(this, finalScore, finalTime);
         cardPanel.add(endPanel, "game_end");

@@ -5,14 +5,16 @@ import model.entities.Pacman;
 import model.map.BlockType;
 
 import javax.swing.*;
+import java.awt.*;
 
 public class GhostLoop extends Thread {
     private final Ghost ghost;
     private final BlockType[][] map;
     private final JLabel ghostLabel;
-    private volatile boolean running = true;
     private final Pacman pacman;
     private final Logic logic;
+    private volatile boolean running = true;
+    private volatile boolean paused = false;
 
     public GhostLoop(Ghost ghost, BlockType[][] map, JLabel ghostLabel, Pacman pacman, Logic logic) {
 
@@ -26,16 +28,26 @@ public class GhostLoop extends Thread {
     @Override
     public void run() {
         while (running){
+            if (paused) {
+                try {
+                    Thread.sleep(50);
+                    continue;
+                } catch (InterruptedException ignored) {}
+            }
             ghost.stepMove(map);
 
             // ⛔ Collision detection
-            if (Math.abs(ghost.getX() - pacman.getX()) < 30 &&
-                    Math.abs(ghost.getY() - pacman.getY()) < 30) {
+            Rectangle ghostRect = new Rectangle(ghost.getX(), ghost.getY(), 45, 45);
+            Rectangle pacmanRect = new Rectangle(pacman.getX(), pacman.getY(), 45, 45);
+
+            if (ghostRect.intersects(pacmanRect)) {
                 pacman.loseLife();
+                System.out.println("🟥 Pacman hit! Lives left: " + pacman.getLives());
+                System.out.println("GhostLoop checking: " + this + " | Pacman: " + pacman + " | Lives: " + pacman.getLives());
                 pacman.resetPosition();
                 logic.resetAllGhosts();
-
             }
+
 
             SwingUtilities.invokeLater(() -> {
                 ghostLabel.setLocation(ghost.getX(), ghost.getY());
@@ -47,5 +59,13 @@ public class GhostLoop extends Thread {
     }
     public void stopLoop() {
         running = false;
+    }
+
+    public void pause() {
+        paused = true;
+    }
+
+    public void resumeLoop() {
+        paused = false;
     }
 }
