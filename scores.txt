@@ -16,3 +16,5 @@ super,1840,106
 sorry,1080,35
 no i lov eit,900,60
 check checksssssssssssssssssssssssssss,270,9
+tresh,1340,63
+tried,3260,146

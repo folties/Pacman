@@ -64,10 +64,10 @@ public class Pacman extends Entity implements Walkable {
         // Calculate movement
         int dx = 0, dy = 0;
         switch (direction) {
-            case UP -> dy = -speed;
-            case DOWN -> dy = speed;
-            case LEFT -> dx = -speed;
-            case RIGHT -> dx = speed;
+            case UP -> dy = (int) -speed;
+            case DOWN -> dy = (int) speed;
+            case LEFT -> dx = (int) -speed;
+            case RIGHT -> dx = (int) speed;
         }
 
         int nextX = x + dx;
@@ -156,5 +156,19 @@ public class Pacman extends Entity implements Walkable {
     public int getY() { return y; }
     public int getLives() { return lives; }
     public int getScore() { return score; }
-    public int getSpeed() { return speed; }
+    public void setSpeed(float speed) {
+        this.speed = speed;
+    }
+    @Override
+    public int getCol() {
+        return col;
+    }
+    @Override
+    public int getRow() {
+        return row;
+    }
+
+
+
+    public float  getSpeed() { return speed; }
 }

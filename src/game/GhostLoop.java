@@ -52,7 +52,7 @@ public class GhostLoop extends Thread {
                     ghostLabel.setLocation(ghost.getX(), ghost.getY())
             );
 
-            sleepSafely(100); // speed control (can be modified based on upgrades)
+            sleepSafely(16); // speed control (can be modified based on upgrades)
         }
     }
 

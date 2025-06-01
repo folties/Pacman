@@ -39,7 +39,7 @@ public class PacmanLoop extends Thread {
                 continue;
             }
 
-            logic.update();       // update game logic (movement, collision, etc.)
+            logic.update(gamingWindow);       // update game logic (movement, collision, etc.)
             onFrameUpdate.run();  // update UI on the EDT (through SwingUtilities in caller)
 
             sleepSafely(16); // ~60 FPS

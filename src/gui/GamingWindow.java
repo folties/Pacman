@@ -9,6 +9,8 @@ import main.MainWindow;
 import model.entities.Ghost;
 import model.map.BlockType;
 import model.map.MapType;
+import model.upgrades.SpeedUpgrade;
+import model.upgrades.Upgrade;
 import util.Resources;
 
 import javax.swing.*;
@@ -24,6 +26,7 @@ public class GamingWindow extends JPanel {
 
     private final MainWindow mainWindow;
     private final Logic gameLogic;
+    // === Upgrades ===
 
     private JLabel[][] cells;
     private JLabel pacmanLabel;
@@ -141,6 +144,7 @@ public class GamingWindow extends JPanel {
                     updateHeartsUI();
                 });
                 scoreLabel.setText("Score: " + gameLogic.getScore());
+
             });
             gameLoop.start();
 
@@ -334,6 +338,14 @@ public class GamingWindow extends JPanel {
             for (int c = 0; c < logicMap[0].length; c++) {
                 Image image = Resources.getImageForBlockType(logicMap[r][c]);
                 cells[r][c].setIcon(image != null ? new ImageIcon(image) : null);
+            }
+        }
+        // Render active upgrades
+        for (Upgrade upgrade : gameLogic.getUpgrades()) {
+            if (!upgrade.isCollected()) {
+                int x = upgrade.getX();
+                int y = upgrade.getY();
+                cells[y][x].setIcon(new ImageIcon(Resources.speedUpgradeImage));
             }
         }
     }

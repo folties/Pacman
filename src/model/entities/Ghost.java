@@ -7,40 +7,39 @@ import java.awt.*;
 import java.util.*;
 import java.util.List;
 
-/**
- * Represents a single ghost entity in the game.
- * Handles movement logic, portal traversal, and animation direction.
- */
 public class Ghost extends Entity implements Walkable {
 
-    // === Constants & Start Position ===
     private static final int blockSize = 45;
+    private static final float EPSILON = 0.1f;
+
+    private static final float[] speedLevel = {1.5f, 2.5f, 3.0f, 4.5f, 6.0f, 7.5f, 9.0f, 15.0f, 22.5f};
+    private int currentSpeedIndex = 0;
+
     private final int startRow, startCol;
+    private float x, y;
 
-    // === Position and Direction ===
-    private int x, y;
-
-    // === Portals ===
-    private Point leftPortalPos;
-    private Point rightPortalPos;
-
-    // === Animation ===
+    private Point leftPortalPos, rightPortalPos;
     private Map<Direction, Image[]> animationFrames;
 
-    // === Constructor ===
     public Ghost(int row, int col) {
-        super(row, col, Direction.DOWN, 45); // Initial direction and speed
+        super(row, col, Direction.DOWN, 1.25f); // Start with float speed
         this.startRow = row;
         this.startCol = col;
         this.x = col * blockSize;
         this.y = row * blockSize;
     }
 
-    // === Movement Logic ===
+    public void levelUpSpeed() {
+        if (currentSpeedIndex < speedLevel.length - 1) {
+            currentSpeedIndex++;
+            this.speed = speedLevel[currentSpeedIndex];
+        }
+    }
+
     public void stepMove(BlockType[][] logicMap) {
-        if (x % blockSize == 0 && y % blockSize == 0) {
-            row = y / blockSize;
-            col = x / blockSize;
+        if (isAlignedToGrid()) {
+            row = (int) (y / blockSize);
+            col = (int) (x / blockSize);
 
             // Handle portals
             if (logicMap[row][col] == BlockType.LEFT_PORTAL && rightPortalPos != null) {
@@ -49,20 +48,19 @@ public class Ghost extends Entity implements Walkable {
                 teleportTo(leftPortalPos);
             }
 
-            // Determine valid directions (excluding reverse)
+            // Determine possible directions
             List<Direction> validDirs = new ArrayList<>();
             for (Direction dir : Direction.values()) {
                 if (dir == getOpposite(direction)) continue;
 
-                int tryRow = row + (dir == Direction.UP ? -1 : dir == Direction.DOWN ? 1 : 0);
-                int tryCol = col + (dir == Direction.LEFT ? -1 : dir == Direction.RIGHT ? 1 : 0);
+                int tryRow = row + deltaRow(dir);
+                int tryCol = col + deltaCol(dir);
 
-                if (canMoveTo(tryCol * blockSize, tryRow * blockSize, logicMap)) {
+                if (isWalkable(logicMap, tryRow, tryCol)) {
                     validDirs.add(dir);
                 }
             }
 
-            // Choose new direction at intersections or dead ends
             if (!validDirs.isEmpty()) {
                 boolean atIntersection = validDirs.size() > 1;
                 boolean blockedAhead = !isWalkable(logicMap, row + deltaRow(direction), col + deltaCol(direction));
@@ -74,18 +72,22 @@ public class Ghost extends Entity implements Walkable {
         }
 
         // Move by current direction
-        int dx = deltaCol(direction) * speed;
-        int dy = deltaRow(direction) * speed;
+        float dx = deltaCol(direction) * speed;
+        float dy = deltaRow(direction) * speed;
 
-        int nextX = x + dx;
-        int nextY = y + dy;
+        float nextX = x + dx;
+        float nextY = y + dy;
 
         if (canMoveTo(nextX, nextY, logicMap)) {
             x = nextX;
             y = nextY;
-            row = y / blockSize;
-            col = x / blockSize;
+            row = (int) (y / blockSize);
+            col = (int) (x / blockSize);
         }
+    }
+
+    private boolean isAlignedToGrid() {
+        return Math.abs(x % blockSize) < EPSILON && Math.abs(y % blockSize) < EPSILON;
     }
 
     private void teleportTo(Point portalPos) {
@@ -94,8 +96,6 @@ public class Ghost extends Entity implements Walkable {
         this.row = portalPos.y;
         this.col = portalPos.x;
     }
-
-    // === Movement Utilities ===
 
     private int deltaRow(Direction dir) {
         return switch (dir) {
@@ -122,11 +122,11 @@ public class Ghost extends Entity implements Walkable {
         };
     }
 
-    private boolean canMoveTo(int x, int y, BlockType[][] logicMap) {
-        int left = x;
-        int right = x + blockSize - 1;
-        int top = y;
-        int bottom = y + blockSize - 1;
+    private boolean canMoveTo(float x, float y, BlockType[][] logicMap) {
+        int left = (int) x;
+        int right = (int) (x + blockSize - 1);
+        int top = (int) y;
+        int bottom = (int) (y + blockSize - 1);
 
         return isWalkable(logicMap, top / blockSize, left / blockSize) &&
                 isWalkable(logicMap, top / blockSize, right / blockSize) &&
@@ -140,8 +140,6 @@ public class Ghost extends Entity implements Walkable {
                 logicMap[r][c] != BlockType.WALL;
     }
 
-    // === State Reset ===
-
     public void resetPosition() {
         this.row = startRow;
         this.col = startCol;
@@ -149,8 +147,6 @@ public class Ghost extends Entity implements Walkable {
         this.y = row * blockSize;
         this.direction = Direction.DOWN;
     }
-
-    // === Setters and Getters ===
 
     public void setPortalPositions(Point left, Point right) {
         this.leftPortalPos = left;
@@ -164,23 +160,25 @@ public class Ghost extends Entity implements Walkable {
     public Image[] getFramesForDirection(Direction direction) {
         return animationFrames.get(direction);
     }
-    public void setSpeed(int speed) {
+
+    public void setSpeed(float speed) {
         this.speed = speed;
     }
 
-    public int getSpeed() { return speed; }
-
-
-
-    @Override
-    public int getX() { return x; }
-    @Override
-    public int getY() { return y; }
-
-    @Override public Direction getDirection() {
-        return direction;
+    public float getSpeed() {
+        return speed;
     }
-    @Override public void setDirection(Direction direction) {
-        this.direction = direction; }
 
+    @Override public int getX() { return Math.round(x); }
+    @Override public int getY() { return Math.round(y); }
+    @Override public Direction getDirection() { return direction; }
+    @Override public void setDirection(Direction direction) { this.direction = direction; }
+    @Override
+    public int getCol() {
+        return col;
+    }
+    @Override
+    public int getRow() {
+        return col;
+    }
 }

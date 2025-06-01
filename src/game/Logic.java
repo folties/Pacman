@@ -6,6 +6,8 @@ import model.entities.Pacman;
 import model.map.BlockType;
 import model.map.MapDesign;
 import model.map.MapType;
+import model.upgrades.SpeedUpgrade;
+import model.upgrades.Upgrade;
 import util.Resources;
 
 import java.awt.*;
@@ -22,19 +24,28 @@ public class Logic {
     private final BlockType[][] logicMap;
     private Pacman pacman;
     private final List<Ghost> ghosts = new ArrayList<>();
+    private final String[] originalMapLayout;
 
     // === Portals ===
     private Point leftPortalPos;
     private Point rightPortalPos;
 
+    private final List<Upgrade> upgrades = new ArrayList<>();
+
+
     // === Constructor ===
     public Logic(int rows, int cols) {
         MapType mapType = determineMapType(rows, cols);
         String[] currentBlockMap = Resources.loadMapType(mapType);
+        this.originalMapLayout = currentBlockMap;
         logicMap = MapDesign.loadLogicMap(currentBlockMap);
 
         initializePacmanAndPortals(currentBlockMap);
         initializeGhosts(currentBlockMap);
+
+        int upgradeRow = pacman.getRow();
+        int upgradeCol = pacman.getCol() + 2;
+        upgrades.add(new SpeedUpgrade(upgradeCol, upgradeRow));
 
         // Assign portal positions to Pacman
         if (pacman != null) {
@@ -45,11 +56,18 @@ public class Logic {
     // === Public Methods ===
 
     /** Updates game state each frame (Pacman only; ghosts handled separately). */
-    public void update() {
+    public void update(GamingWindow window) {
         pacman.stepMove(logicMap);
 
         if (isAllFoodEaten()) {
             startNextLevel();
+            window.showCountdownThenResume();
+        }
+
+        for (Upgrade upgrade : upgrades) {
+            if (upgrade.isCollected(pacman.getCol(), pacman.getRow())) {
+                upgrade.apply(pacman);
+            }
         }
     }
 
@@ -57,17 +75,18 @@ public class Logic {
         // Refill all FOOD blocks
         for (int r = 0; r < logicMap.length; r++) {
             for (int c = 0; c < logicMap[0].length; c++) {
-                if (logicMap[r][c] == BlockType.EMPTY) {
+                if (originalMapLayout[r].charAt(c) == ' ') {
                     logicMap[r][c] = BlockType.FOOD;
                 }
             }
         }
 
+
         // Reset Pacman and Ghosts
         pacman.resetPosition();
         for (Ghost ghost : ghosts) {
             ghost.resetPosition();
-            ghost.setSpeed(ghost.getSpeed() + 1); // Increase ghost speed
+            ghost.levelUpSpeed();
         }
     }
 
@@ -132,6 +151,11 @@ public class Logic {
     public int getScore() {
         return pacman.getScore();
     }
+
+    public List<Upgrade> getUpgrades() {
+        return upgrades;
+    }
+
 
     // === Private Initialization ===
 

@@ -9,4 +9,7 @@ public interface Walkable {
     int getY();
     Direction getDirection();
     void setDirection(Direction direction);
+
+    int getCol();
+    int getRow();
 }
