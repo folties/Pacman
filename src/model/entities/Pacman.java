@@ -12,10 +12,11 @@ import java.awt.*;
 public class Pacman extends Entity implements Walkable {
 
     // === Constants ===
+    private static final float EPSILON = 0.1f;
     private static final int blockSize = 45;
 
     // === State ===
-    private int x, y;
+    private float  x, y;
     private int lives = 3;
     private int score = 0;
     private Direction nextDirection;
@@ -43,9 +44,9 @@ public class Pacman extends Entity implements Walkable {
     /** Called every frame to update Pacman's movement and interactions. */
     public void stepMove(BlockType[][] logicMap) {
         // At tile center: update direction if nextDirection is valid
-        if (x % blockSize == 0 && y % blockSize == 0) {
-            row = y / blockSize;
-            col = x / blockSize;
+        if (Math.abs(x % blockSize) < EPSILON && Math.abs(y % blockSize) < EPSILON){
+            row = (int) (y / blockSize);
+            col = (int) (x / blockSize);
 
             if (nextDirection != null) {
                 int tryRow = row, tryCol = col;
@@ -62,16 +63,17 @@ public class Pacman extends Entity implements Walkable {
         }
 
         // Calculate movement
-        int dx = 0, dy = 0;
+        float dx = 0, dy = 0;
         switch (direction) {
-            case UP -> dy = (int) -speed;
-            case DOWN -> dy = (int) speed;
-            case LEFT -> dx = (int) -speed;
-            case RIGHT -> dx = (int) speed;
+            case UP -> dy = -speed;
+            case DOWN -> dy = speed;
+            case LEFT -> dx = -speed;
+            case RIGHT -> dx = speed;
         }
 
-        int nextX = x + dx;
-        int nextY = y + dy;
+
+        float  nextX = x + dx;
+        float  nextY = y + dy;
 
         // Move if no wall ahead
         if (canMoveTo(nextX, nextY, logicMap)) {
@@ -79,8 +81,8 @@ public class Pacman extends Entity implements Walkable {
             y = nextY;
 
             if (x % blockSize == 0 && y % blockSize == 0) {
-                row = y / blockSize;
-                col = x / blockSize;
+                row = (int) (y / blockSize);
+                col = (int) (x / blockSize);
 
                 // Collect food
                 if (logicMap[row][col] == BlockType.FOOD) {
@@ -105,11 +107,11 @@ public class Pacman extends Entity implements Walkable {
         col = portalPos.x;
     }
 
-    private boolean canMoveTo(int x, int y, BlockType[][] logicMap) {
-        int left = x;
-        int right = x + blockSize - 1;
-        int top = y;
-        int bottom = y + blockSize - 1;
+    private boolean canMoveTo(float  x, float  y, BlockType[][] logicMap) {
+        int left = (int) x;
+        int right = (int) (x + blockSize - 1);
+        int top = (int) y;
+        int bottom = (int) (y + blockSize - 1);
 
         return isWalkable(logicMap, top / blockSize, left / blockSize) &&
                 isWalkable(logicMap, top / blockSize, right / blockSize) &&
@@ -150,10 +152,8 @@ public class Pacman extends Entity implements Walkable {
     public Direction getDirection() { return direction; }
     @Override
     public void setDirection(Direction direction) { this.nextDirection = direction; }
-    @Override
-    public int getX() { return x; }
-    @Override
-    public int getY() { return y; }
+    @Override public int getX() { return Math.round(x); }
+    @Override public int getY() { return Math.round(y); }
     public int getLives() { return lives; }
     public int getScore() { return score; }
     public void setSpeed(float speed) {

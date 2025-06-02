@@ -11,21 +11,32 @@ public abstract class Upgrade {
         this.y = y;
     }
 
-    public boolean isCollected(int px, int py) {
-        return px == x && py == y && !collected;
-    }
-
     public boolean isCollected() {
         return collected;
     }
 
-    public int getX() {
-        return x;
+    public int getX() { return x; }
+    public int getY() { return y; }
+
+    public boolean isCollected(int col, int row) {
+        return !collected && this.x == col && this.y == row;
     }
 
-    public int getY() {
-        return y;
+    public final void apply(Pacman pacman) {
+        if (!collected) {
+            collected = true;
+            applyEffect(pacman);
+
+            // Revert after 10 seconds (10000 ms)
+            new Thread(() -> {
+                try {
+                    Thread.sleep(10000);
+                    revertEffect(pacman);
+                } catch (InterruptedException ignored) {}
+            }).start();
+        }
     }
 
-    public abstract void apply(Pacman pacman);
+    protected abstract void applyEffect(Pacman pacman);
+    protected abstract void revertEffect(Pacman pacman);
 }
