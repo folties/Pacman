@@ -4,6 +4,7 @@ import gui.GamingWindow;
 import model.entities.Ghost;
 import model.entities.Pacman;
 import model.map.BlockType;
+import model.upgrades.ExtraLifeUpgrade;
 import model.upgrades.SpeedUpgrade;
 
 import javax.swing.*;
@@ -67,7 +68,7 @@ public class GhostLoop extends Thread {
         new Thread(() -> {
             while (running) {
                 try {
-                    Thread.sleep(5000); // чекаємо 5 секунд
+                    Thread.sleep(5000); // wait 5 seconds
                 } catch (InterruptedException ignored) {}
 
                 if (!paused && Math.random() < 0.25) {
@@ -75,19 +76,27 @@ public class GhostLoop extends Thread {
                     int col = ghost.getCol();
                     BlockType current = map[row][col];
 
-                    synchronized (logic) { // 🔒 Захист від одночасного доступу
-                        if ((current == BlockType.EMPTY || current == BlockType.FOOD)
-                                && !logic.hasUncollectedSpeedUpgrade()
-                                && !logic.hasUpgradeAt(col, row)) {
+                    synchronized (logic) { // 🔒 thread-safe check
+                        boolean validSpot = (current == BlockType.EMPTY || current == BlockType.FOOD)
+                                && !logic.hasUpgradeAt(col, row);
 
-                            logic.getUpgrades().add(new SpeedUpgrade(col, row));
-                            System.out.println("💎 Ghost dropped a SpeedUpgrade at: " + col + "," + row);
+                        if (validSpot) {
+                            double chance = Math.random();
+
+                            if (chance < 0.5 && !logic.hasUncollectedSpeedUpgrade()) {
+                                logic.getUpgrades().add(new SpeedUpgrade(col, row));
+                                System.out.println("💎 Dropped SpeedUpgrade at: " + col + "," + row);
+                            } else if (!logic.hasUncollectedExtraLifeUpgrade()) {
+                                logic.getUpgrades().add(new ExtraLifeUpgrade(col, row));
+                                System.out.println("❤️ Dropped ExtraLifeUpgrade at: " + col + "," + row);
+                            }
                         }
                     }
                 }
             }
         }).start();
     }
+
 
 
 

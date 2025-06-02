@@ -9,6 +9,7 @@ import main.MainWindow;
 import model.entities.Ghost;
 import model.map.BlockType;
 import model.map.MapType;
+import model.upgrades.ExtraLifeUpgrade;
 import model.upgrades.SpeedUpgrade;
 import model.upgrades.Upgrade;
 import util.Resources;
@@ -340,15 +341,27 @@ public class GamingWindow extends JPanel {
                 cells[r][c].setIcon(image != null ? new ImageIcon(image) : null);
             }
         }
-        // Render active upgrades
+
+        // Render active upgrades with correct image
         for (Upgrade upgrade : gameLogic.getUpgrades()) {
             if (!upgrade.isCollected()) {
                 int x = upgrade.getX();
                 int y = upgrade.getY();
-                cells[y][x].setIcon(new ImageIcon(Resources.speedUpgradeImage));
+
+                Image image = null;
+                if (upgrade instanceof SpeedUpgrade) {
+                    image = Resources.speedUpgradeImage;
+                } else if (upgrade instanceof ExtraLifeUpgrade) {
+                    image = Resources.extraLifeUpgradeImage;
+                }
+
+                if (image != null) {
+                    cells[y][x].setIcon(new ImageIcon(image));
+                }
             }
         }
     }
+
 }
 
 

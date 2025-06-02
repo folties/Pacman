@@ -19,3 +19,4 @@ check checksssssssssssssssssssssssssss,270,9
 tresh,1340,63
 tried,3260,146
 tvari,3460,119
+sorry,2090,102

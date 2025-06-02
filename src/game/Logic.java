@@ -6,6 +6,7 @@ import model.entities.Pacman;
 import model.map.BlockType;
 import model.map.MapDesign;
 import model.map.MapType;
+import model.upgrades.ExtraLifeUpgrade;
 import model.upgrades.SpeedUpgrade;
 import model.upgrades.Upgrade;
 import util.Resources;
@@ -70,6 +71,14 @@ public class Logic {
     public boolean hasUncollectedSpeedUpgrade() {
         for (Upgrade upgrade : upgrades) {
             if (!upgrade.isCollected() && upgrade instanceof SpeedUpgrade) {
+                return true;
+            }
+        }
+        return false;
+    }
+    public boolean hasUncollectedExtraLifeUpgrade() {
+        for (Upgrade upgrade : upgrades) {
+            if (!upgrade.isCollected() && upgrade instanceof ExtraLifeUpgrade) {
                 return true;
             }
         }

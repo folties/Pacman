@@ -25,6 +25,7 @@ public class Resources {
     public static Image pauseBackgroundImage;
     public static Image endBackgroundImage;
     public static Image speedUpgradeImage;
+    public static Image extraLifeUpgradeImage;
 
     public static Map<Direction, Image[]> pacmanFrames;
 
@@ -46,6 +47,7 @@ public class Resources {
         foodImage = loadImage("materials/food.png");
         heartIcon = loadImageIcon("materials/heart.png");
         speedUpgradeImage = loadImage("materials/upgrades/speedUpgrade.png");
+        extraLifeUpgradeImage = loadImage("materials/upgrades/lifeUpgrade.png");
 
         pacmanFrames = new HashMap<>();
 

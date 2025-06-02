@@ -15,6 +15,10 @@ public abstract class Upgrade {
         return collected;
     }
 
+    public void setCollected(boolean collected) {
+        this.collected = collected;
+    }
+
     public int getX() { return x; }
     public int getY() { return y; }
 

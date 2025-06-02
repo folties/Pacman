@@ -161,6 +161,13 @@ public class Pacman extends Entity implements Walkable {
         }
     }
 
+    public void gainLife() {
+        if (lives < 3) {
+            lives++;
+        }
+    }
+
+
 
     // === Getters ===
 
