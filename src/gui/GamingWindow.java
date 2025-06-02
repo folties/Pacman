@@ -349,22 +349,32 @@ public class GamingWindow extends JPanel {
                 int x = upgrade.getX();
                 int y = upgrade.getY();
 
-                Image image = null;
-                if (upgrade instanceof SpeedUpgrade) {
-                    image = Resources.speedUpgradeImage;
-                } else if (upgrade instanceof ExtraLifeUpgrade) {
-                    image = Resources.extraLifeUpgradeImage;
-                } else if (upgrade instanceof ProtectionUpgrade) {
-                    image = Resources.protectionUpgradeImage;
+                boolean visible = true;
+
+                // If blinking mode is active: toggle visibility every ~500 ms
+                if (upgrade.isBlinking()) {
+                    long time = System.currentTimeMillis();
+                    visible = (time / 500) % 2 == 0; // blink on/off every 500 ms
                 }
 
-                if (image != null) {
-                    cells[y][x].setIcon(new ImageIcon(image));
+                if (visible) {
+                    Image img = switch (upgrade.getClass().getSimpleName()) {
+                        case "SpeedUpgrade" -> Resources.speedUpgradeImage;
+                        case "ExtraLifeUpgrade" -> Resources.extraLifeUpgradeImage;
+                        case "ProtectionUpgrade" -> Resources.protectionUpgradeImage;
+                        default -> null;
+                    };
+                    if (img != null) {
+                        cells[y][x].setIcon(new ImageIcon(img));
+                    }
+                } else {
+                    cells[y][x].setIcon(null); // hide during blink
                 }
             }
         }
-    }
 
+    }
 }
+
 
 

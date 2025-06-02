@@ -1,5 +1,6 @@
 package model.entities;
 
+import game.Logic;
 import model.map.BlockType;
 import util.Direction;
 import util.Resources;
@@ -26,6 +27,7 @@ public class Pacman extends Entity implements Walkable {
     private int lives = 3;
     private int score = 0;
     private Direction nextDirection;
+    private Logic logic;
 
     private boolean isProtected = false;
 
@@ -218,4 +220,12 @@ public class Pacman extends Entity implements Walkable {
     }
 
     public float  getSpeed() { return speed; }
+
+    public void setLogic(Logic logic) {
+        this.logic = logic;
+    }
+    public Logic getLogic() {
+        return logic;
+    }
+
 }

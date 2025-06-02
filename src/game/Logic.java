@@ -33,6 +33,9 @@ public class Logic {
     private Point rightPortalPos;
 
     private final List<Upgrade> upgrades = new ArrayList<>();
+    private boolean speedEffectActive = false;
+    private boolean protectionEffectActive = false;
+
 
 
     // === Constructor ===
@@ -47,6 +50,7 @@ public class Logic {
 
         // Assign portal positions to Pacman
         if (pacman != null) {
+            pacman.setLogic(this); // ✅ Set the reference for upgrades
             pacman.setPortalPositions(leftPortalPos, rightPortalPos);
         }
     }
@@ -69,33 +73,14 @@ public class Logic {
         }
     }
 
-    public boolean hasUncollectedSpeedUpgrade() {
+    public boolean hasUncollectedUpgradeOfType(Class<? extends Upgrade> type) {
         for (Upgrade upgrade : upgrades) {
-            if (!upgrade.isCollected() && upgrade instanceof SpeedUpgrade) {
+            if (!upgrade.isCollected() && type.isInstance(upgrade)) {
                 return true;
             }
         }
         return false;
     }
-    public boolean hasUncollectedExtraLifeUpgrade() {
-        for (Upgrade upgrade : upgrades) {
-            if (!upgrade.isCollected() && upgrade instanceof ExtraLifeUpgrade) {
-                return true;
-            }
-        }
-        return false;
-    }
-    public boolean hasUncollectedProtectionUpgrade() {
-        for (Upgrade upgrade : upgrades) {
-            if (!upgrade.isCollected() && upgrade instanceof ProtectionUpgrade) {
-                return true;
-            }
-        }
-        return false;
-    }
-
-
-
 
 
     public void startNextLevel() {
@@ -116,7 +101,17 @@ public class Logic {
             ghost.resetPosition();
             ghost.levelUpSpeed();
         }
+        upgrades.clear();
     }
+
+    public void setSpeedEffectActive(boolean active) {
+        this.speedEffectActive = active;
+    }
+
+    public void setProtectionEffectActive(boolean active) {
+        this.protectionEffectActive = active;
+    }
+
 
 
 
@@ -195,6 +190,14 @@ public class Logic {
     public List<Upgrade> getUpgrades() {
         return upgrades;
     }
+    public boolean isSpeedEffectActive() {
+        return speedEffectActive;
+    }
+
+    public boolean isProtectionEffectActive() {
+        return protectionEffectActive;
+    }
+
 
 
     // === Private Initialization ===

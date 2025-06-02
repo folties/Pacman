@@ -72,25 +72,32 @@ public class GhostLoop extends Thread {
                     Thread.sleep(5000); // wait 5 seconds
                 } catch (InterruptedException ignored) {}
 
-                if (!paused && Math.random() < 0.25) {
+                if (paused) continue;
+
+                // ⛔ Don't spawn if any upgrade is active
+                if (logic.isSpeedEffectActive() || logic.isProtectionEffectActive()) {
+                    continue; // ✅ skip this round
+                }
+
+                if (Math.random() < 0.25) {
                     int row = ghost.getRow();
                     int col = ghost.getCol();
                     BlockType current = map[row][col];
 
                     synchronized (logic) { // 🔒 thread-safe check
-                        boolean validSpot = (current == BlockType.EMPTY)
+                        boolean validSpot = (current == BlockType.EMPTY || current == BlockType.FOOD)
                                 && !logic.hasUpgradeAt(col, row);
 
                         if (validSpot) {
                             double chance = Math.random();
 
-                            if (chance < 0.33 && !logic.hasUncollectedSpeedUpgrade()) {
+                            if (chance < 0.33 && !logic.hasUncollectedUpgradeOfType(SpeedUpgrade.class)) {
                                 logic.getUpgrades().add(new SpeedUpgrade(col, row));
                                 System.out.println("💎 Dropped SpeedUpgrade at: " + col + "," + row);
-                            } else if (chance < 0.66 && !logic.hasUncollectedExtraLifeUpgrade()) {
+                            } else if (chance < 0.66 && !logic.hasUncollectedUpgradeOfType(ExtraLifeUpgrade.class)) {
                                 logic.getUpgrades().add(new ExtraLifeUpgrade(col, row));
                                 System.out.println("❤️ Dropped ExtraLifeUpgrade at: " + col + "," + row);
-                            } else if (!logic.hasUncollectedProtectionUpgrade()) {
+                            } else if (!logic.hasUncollectedUpgradeOfType(ProtectionUpgrade.class)) {
                                 logic.getUpgrades().add(new ProtectionUpgrade(col, row));
                                 System.out.println("🛡️ Dropped ProtectionUpgrade at: " + col + "," + row);
                             }

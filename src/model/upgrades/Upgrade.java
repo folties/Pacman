@@ -5,10 +5,27 @@ import model.entities.Pacman;
 public abstract class Upgrade {
     protected final int x, y;
     protected boolean collected = false;
+    protected boolean blinking = false;
+
 
     public Upgrade(int x, int y) {
         this.x = x;
         this.y = y;
+
+        new Thread(() -> {
+            try {
+                // Wait 10 seconds, then start blinking
+                Thread.sleep(10000);
+                blinking = true;
+
+                // Wait 5 more seconds, then mark as collected
+                Thread.sleep(5000);
+                if (!collected) {
+                    collected = true;
+                    System.out.println("⏳ Upgrade at " + x + "," + y + " expired");
+                }
+            } catch (InterruptedException ignored) {}
+        }).start();
     }
 
     public boolean isCollected() {
@@ -40,6 +57,10 @@ public abstract class Upgrade {
             }).start();
         }
     }
+    public boolean isBlinking() {
+        return blinking;
+    }
+
 
     protected abstract void applyEffect(Pacman pacman);
     protected abstract void revertEffect(Pacman pacman);

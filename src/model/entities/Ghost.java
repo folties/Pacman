@@ -22,7 +22,7 @@ public class Ghost extends Entity implements Walkable {
     private Map<Direction, Image[]> animationFrames;
 
     public Ghost(int row, int col) {
-        super(row, col, Direction.DOWN, 1.25f); // Start with float speed
+        super(row, col, Direction.DOWN, 1.5f); // Start with float speed
         this.startRow = row;
         this.startCol = col;
         this.x = col * blockSize;

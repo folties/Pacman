@@ -20,3 +20,6 @@ tresh,1340,63
 tried,3260,146
 tvari,3460,119
 sorry,2090,102
+tvar,4160,185
+da kak tak to,2050,106
+ny blin ny,3700,206
