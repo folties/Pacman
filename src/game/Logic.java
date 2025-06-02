@@ -7,6 +7,7 @@ import model.map.BlockType;
 import model.map.MapDesign;
 import model.map.MapType;
 import model.upgrades.ExtraLifeUpgrade;
+import model.upgrades.ProtectionUpgrade;
 import model.upgrades.SpeedUpgrade;
 import model.upgrades.Upgrade;
 import util.Resources;
@@ -84,6 +85,15 @@ public class Logic {
         }
         return false;
     }
+    public boolean hasUncollectedProtectionUpgrade() {
+        for (Upgrade upgrade : upgrades) {
+            if (!upgrade.isCollected() && upgrade instanceof ProtectionUpgrade) {
+                return true;
+            }
+        }
+        return false;
+    }
+
 
 
 
@@ -112,6 +122,8 @@ public class Logic {
 
     public void checkGhostCollision(Ghost ghost, GamingWindow window) {
         Pacman pacman = getPacman();
+
+        if (pacman.isProtected()) return;
 
         Rectangle ghostRect = new Rectangle(ghost.getX(), ghost.getY(), 45, 45);
         Rectangle pacmanRect = new Rectangle(pacman.getX(), pacman.getY(), 45, 45);

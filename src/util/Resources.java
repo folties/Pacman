@@ -26,8 +26,11 @@ public class Resources {
     public static Image endBackgroundImage;
     public static Image speedUpgradeImage;
     public static Image extraLifeUpgradeImage;
+    public static Image protectionUpgradeImage;
 
     public static Map<Direction, Image[]> pacmanFrames;
+    public static Map<Direction, Image[]> pacmanFramesGrey;
+
 
     public static Image[] leftPortalFrames;
     public static Image[] rightPortalFrames;
@@ -48,6 +51,7 @@ public class Resources {
         heartIcon = loadImageIcon("materials/heart.png");
         speedUpgradeImage = loadImage("materials/upgrades/speedUpgrade.png");
         extraLifeUpgradeImage = loadImage("materials/upgrades/lifeUpgrade.png");
+        protectionUpgradeImage = loadImage("materials/upgrades/shieldUpgrade.png");
 
         pacmanFrames = new HashMap<>();
 
@@ -74,6 +78,33 @@ public class Resources {
                 loadImage("materials/pacman/pacmanDown2.png"),
                 loadImage("materials/pacman/pacmanDown3.png")
         });
+
+        pacmanFramesGrey = new HashMap<>();
+
+        pacmanFramesGrey.put(Direction.RIGHT, new Image[] {
+                loadImage("materials/pacman/grey/pacmanRightGrey1.png"),
+                loadImage("materials/pacman/grey/pacmanRightGrey2.png"),
+                loadImage("materials/pacman/grey/pacmanRightGrey3.png")
+        });
+
+        pacmanFramesGrey.put(Direction.LEFT, new Image[] {
+                loadImage("materials/pacman/grey/pacmanLeftGrey1.png"),
+                loadImage("materials/pacman/grey/pacmanLeftGrey2.png"),
+                loadImage("materials/pacman/grey/pacmanLeftGrey3.png")
+        });
+
+        pacmanFramesGrey.put(Direction.UP, new Image[] {
+                loadImage("materials/pacman/grey/pacmanUpGrey1.png"),
+                loadImage("materials/pacman/grey/pacmanUpGrey2.png"),
+                loadImage("materials/pacman/grey/pacmanUpGrey3.png")
+        });
+
+        pacmanFramesGrey.put(Direction.DOWN, new Image[] {
+                loadImage("materials/pacman/grey/pacmanDownGrey1.png"),
+                loadImage("materials/pacman/grey/pacmanDownGrey2.png"),
+                loadImage("materials/pacman/grey/pacmanDownGrey3.png")
+        });
+
 
         redGhostFrames = new HashMap<>();
 

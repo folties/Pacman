@@ -10,6 +10,7 @@ import model.entities.Ghost;
 import model.map.BlockType;
 import model.map.MapType;
 import model.upgrades.ExtraLifeUpgrade;
+import model.upgrades.ProtectionUpgrade;
 import model.upgrades.SpeedUpgrade;
 import model.upgrades.Upgrade;
 import util.Resources;
@@ -217,7 +218,7 @@ public class GamingWindow extends JPanel {
             new GhostAnimation(ghostLabel, ghost).start();
         }
 
-        pacmanAnimation = new PacmanAnimation(pacmanLabel, gameLogic.getPacman(), Resources.pacmanFrames);
+        pacmanAnimation = new PacmanAnimation(pacmanLabel, gameLogic.getPacman());
         pacmanAnimation.start();
 
         leftPortalLabel = new JLabel();
@@ -353,6 +354,8 @@ public class GamingWindow extends JPanel {
                     image = Resources.speedUpgradeImage;
                 } else if (upgrade instanceof ExtraLifeUpgrade) {
                     image = Resources.extraLifeUpgradeImage;
+                } else if (upgrade instanceof ProtectionUpgrade) {
+                    image = Resources.protectionUpgradeImage;
                 }
 
                 if (image != null) {

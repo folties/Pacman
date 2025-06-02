@@ -5,6 +5,7 @@ import model.entities.Ghost;
 import model.entities.Pacman;
 import model.map.BlockType;
 import model.upgrades.ExtraLifeUpgrade;
+import model.upgrades.ProtectionUpgrade;
 import model.upgrades.SpeedUpgrade;
 
 import javax.swing.*;
@@ -77,18 +78,21 @@ public class GhostLoop extends Thread {
                     BlockType current = map[row][col];
 
                     synchronized (logic) { // 🔒 thread-safe check
-                        boolean validSpot = (current == BlockType.EMPTY || current == BlockType.FOOD)
+                        boolean validSpot = (current == BlockType.EMPTY)
                                 && !logic.hasUpgradeAt(col, row);
 
                         if (validSpot) {
                             double chance = Math.random();
 
-                            if (chance < 0.5 && !logic.hasUncollectedSpeedUpgrade()) {
+                            if (chance < 0.33 && !logic.hasUncollectedSpeedUpgrade()) {
                                 logic.getUpgrades().add(new SpeedUpgrade(col, row));
                                 System.out.println("💎 Dropped SpeedUpgrade at: " + col + "," + row);
-                            } else if (!logic.hasUncollectedExtraLifeUpgrade()) {
+                            } else if (chance < 0.66 && !logic.hasUncollectedExtraLifeUpgrade()) {
                                 logic.getUpgrades().add(new ExtraLifeUpgrade(col, row));
                                 System.out.println("❤️ Dropped ExtraLifeUpgrade at: " + col + "," + row);
+                            } else if (!logic.hasUncollectedProtectionUpgrade()) {
+                                logic.getUpgrades().add(new ProtectionUpgrade(col, row));
+                                System.out.println("🛡️ Dropped ProtectionUpgrade at: " + col + "," + row);
                             }
                         }
                     }

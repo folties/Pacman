@@ -2,8 +2,10 @@ package model.entities;
 
 import model.map.BlockType;
 import util.Direction;
+import util.Resources;
 
 import java.awt.*;
+import java.util.Map;
 
 /**
  * Represents the player character (Pacman) with movement logic,
@@ -14,12 +16,19 @@ public class Pacman extends Entity implements Walkable {
     // === Constants ===
     private static final float EPSILON = 0.1f;
     private static final int blockSize = 45;
+    private Map<Direction, Image[]> frames;
+
+
+
 
     // === State ===
     private float  x, y;
     private int lives = 3;
     private int score = 0;
     private Direction nextDirection;
+
+    private boolean isProtected = false;
+
 
     // === Portals ===
     private Point leftPortalPos;
@@ -37,6 +46,7 @@ public class Pacman extends Entity implements Walkable {
         this.nextDirection = Direction.LEFT;
         this.x = col * blockSize;
         this.y = row * blockSize;
+        this.frames = Resources.pacmanFrames;
     }
 
     // === Movement and Game Logic ===
@@ -192,7 +202,20 @@ public class Pacman extends Entity implements Walkable {
         return row;
     }
 
+    public boolean isProtected() {
+        return isProtected;
+    }
 
+    public void setProtected(boolean value) {
+        this.isProtected = value;
+    }
+
+    public void setFrames(Map<Direction, Image[]> frames) {
+        this.frames = frames;
+    }
+    public Map<Direction, Image[]> getFrames() {
+        return frames;
+    }
 
     public float  getSpeed() { return speed; }
 }
