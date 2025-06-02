@@ -43,10 +43,6 @@ public class Logic {
         initializePacmanAndPortals(currentBlockMap);
         initializeGhosts(currentBlockMap);
 
-        int upgradeRow = pacman.getRow();
-        int upgradeCol = pacman.getCol() + 2;
-        upgrades.add(new SpeedUpgrade(upgradeCol, upgradeRow));
-
         // Assign portal positions to Pacman
         if (pacman != null) {
             pacman.setPortalPositions(leftPortalPos, rightPortalPos);
@@ -71,6 +67,18 @@ public class Logic {
         }
     }
 
+    public boolean hasUncollectedSpeedUpgrade() {
+        for (Upgrade upgrade : upgrades) {
+            if (!upgrade.isCollected() && upgrade instanceof SpeedUpgrade) {
+                return true;
+            }
+        }
+        return false;
+    }
+
+
+
+
     public void startNextLevel() {
         // Refill all FOOD blocks
         for (int r = 0; r < logicMap.length; r++) {
@@ -84,6 +92,7 @@ public class Logic {
 
         // Reset Pacman and Ghosts
         pacman.resetPosition();
+        pacman.setDirection(pacman.getDirection());
         for (Ghost ghost : ghosts) {
             ghost.resetPosition();
             ghost.levelUpSpeed();
@@ -126,6 +135,16 @@ public class Logic {
             ghost.resetPosition();
         }
     }
+
+    public boolean hasUpgradeAt(int col, int row) {
+        for (Upgrade u : upgrades) {
+            if (!u.isCollected() && u.getX() == col && u.getY() == row) {
+                return true;
+            }
+        }
+        return false;
+    }
+
 
     // === Getters ===
     public Pacman getPacman() {

@@ -44,7 +44,7 @@ public class Pacman extends Entity implements Walkable {
     /** Called every frame to update Pacman's movement and interactions. */
     public void stepMove(BlockType[][] logicMap) {
         // At tile center: update direction if nextDirection is valid
-        if (Math.abs(x % blockSize) < EPSILON && Math.abs(y % blockSize) < EPSILON){
+        if (isAlignedToGrid()){
             row = (int) (y / blockSize);
             col = (int) (x / blockSize);
 
@@ -100,6 +100,10 @@ public class Pacman extends Entity implements Walkable {
         }
     }
 
+    public boolean isAlignedToGrid() {
+        return Math.abs(x % blockSize) < EPSILON && Math.abs(y % blockSize) < EPSILON;
+    }
+
     private void teleportTo(Point portalPos) {
         x = portalPos.x * blockSize;
         y = portalPos.y * blockSize;
@@ -144,6 +148,19 @@ public class Pacman extends Entity implements Walkable {
         this.leftPortalPos = left;
         this.rightPortalPos = right;
     }
+
+    public void revertSpeed(float originalSpeed) {
+        this.speed = originalSpeed;
+
+        // Fix alignment if Pacman is off-grid after speed change
+        if (!isAlignedToGrid()) {
+            this.x = Math.round(x / blockSize) * blockSize;
+            this.y = Math.round(y / blockSize) * blockSize;
+            this.col = (int) (x / blockSize);
+            this.row = (int) (y / blockSize);
+        }
+    }
+
 
     // === Getters ===
 

@@ -86,7 +86,7 @@ public class Ghost extends Entity implements Walkable {
         }
     }
 
-    private boolean isAlignedToGrid() {
+    public boolean isAlignedToGrid() {
         return Math.abs(x % blockSize) < EPSILON && Math.abs(y % blockSize) < EPSILON;
     }
 
@@ -157,6 +157,7 @@ public class Ghost extends Entity implements Walkable {
         this.animationFrames = frames;
     }
 
+
     public Image[] getFramesForDirection(Direction direction) {
         return animationFrames.get(direction);
     }
@@ -179,6 +180,6 @@ public class Ghost extends Entity implements Walkable {
     }
     @Override
     public int getRow() {
-        return col;
+        return row;
     }
 }

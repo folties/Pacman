@@ -4,6 +4,7 @@ import gui.GamingWindow;
 import model.entities.Ghost;
 import model.entities.Pacman;
 import model.map.BlockType;
+import model.upgrades.SpeedUpgrade;
 
 import javax.swing.*;
 import java.awt.*;
@@ -39,22 +40,56 @@ public class GhostLoop extends Thread {
     // === Main Loop ===
     @Override
     public void run() {
+        startUpgradeThread();
+
         while (running) {
             if (paused) {
                 sleepSafely(50);
                 continue;
             }
+
             // Move the ghost
             ghost.stepMove(map);
+
             logic.checkGhostCollision(ghost, gamingWindow);
-            // Update ghost position in the UI
+
+            // Update UI
             SwingUtilities.invokeLater(() ->
                     ghostLabel.setLocation(ghost.getX(), ghost.getY())
             );
 
-            sleepSafely(16); // speed control (can be modified based on upgrades)
+            sleepSafely(16);
         }
     }
+
+
+    private void startUpgradeThread() {
+        new Thread(() -> {
+            while (running) {
+                try {
+                    Thread.sleep(5000); // чекаємо 5 секунд
+                } catch (InterruptedException ignored) {}
+
+                if (!paused && Math.random() < 0.25) {
+                    int row = ghost.getRow();
+                    int col = ghost.getCol();
+                    BlockType current = map[row][col];
+
+                    synchronized (logic) { // 🔒 Захист від одночасного доступу
+                        if ((current == BlockType.EMPTY || current == BlockType.FOOD)
+                                && !logic.hasUncollectedSpeedUpgrade()
+                                && !logic.hasUpgradeAt(col, row)) {
+
+                            logic.getUpgrades().add(new SpeedUpgrade(col, row));
+                            System.out.println("💎 Ghost dropped a SpeedUpgrade at: " + col + "," + row);
+                        }
+                    }
+                }
+            }
+        }).start();
+    }
+
+
 
     // === External Control Methods ===
     public void stopLoop() {

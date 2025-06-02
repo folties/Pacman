@@ -17,6 +17,6 @@ public class SpeedUpgrade extends Upgrade {
 
     @Override
     protected void revertEffect(Pacman pacman) {
-        pacman.setSpeed(previousSpeed);
+        pacman.revertSpeed(previousSpeed);
     }
 }
