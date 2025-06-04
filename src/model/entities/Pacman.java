@@ -9,10 +9,11 @@ import java.util.Map;
 
 public class Pacman extends Entity implements Walkable {
 
-    private static final float EPSILON = 0.1f;
+    private static final float step = 0.1f;
     private static final int blockSize = Resources.BLOCK_SIZE;
 
-    private float x, y;
+    private float x;
+    private float y;
     private int lives = 3;
     private int score = 0;
 
@@ -107,7 +108,7 @@ public class Pacman extends Entity implements Walkable {
     }
 
     public boolean isAlignedToGrid() {
-        return Math.abs(x % blockSize) < EPSILON && Math.abs(y % blockSize) < EPSILON;
+        return Math.abs(x % blockSize) < step && Math.abs(y % blockSize) < step;
     }
 
     private void teleportTo(Point portalPos) {

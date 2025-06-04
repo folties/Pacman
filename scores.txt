@@ -25,3 +25,8 @@ da kak tak to,2050,106
 ny blin ny,3700,206
 lll,350,9
 lol,280,10
+triedddd,6340,272
+(,750,28
+smth,570,16
+hi,60,1
+try,150,5

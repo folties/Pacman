@@ -11,13 +11,14 @@ import java.util.List;
 public class Ghost extends Entity implements Walkable {
 
     private static final int blockSize = Resources.BLOCK_SIZE;
-    private static final float EPSILON = 0.1f;
+    private static final float step = 0.1f;
     private static final float[] speedLevel = {1.5f, 2.5f, 3.0f, 4.5f, 6.0f, 7.5f, 9.0f, 15.0f, 22.5f};
 
     private int currentSpeedIndex = 0;
 
     private final int startRow, startCol;
-    private float x, y;
+    private float x;
+    private float y;
 
     private Point leftPortalPos, rightPortalPos;
     private Map<Direction, Image[]> animationFrames;
@@ -75,7 +76,7 @@ public class Ghost extends Entity implements Walkable {
     }
 
     public boolean isAlignedToGrid() {
-        return Math.abs(x % blockSize) < EPSILON && Math.abs(y % blockSize) < EPSILON;
+        return Math.abs(x % blockSize) < step && Math.abs(y % blockSize) < step;
     }
 
     private void teleportTo(Point portalPos) {

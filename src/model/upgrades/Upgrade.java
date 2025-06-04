@@ -3,7 +3,8 @@ package model.upgrades;
 import model.entities.Pacman;
 
 public abstract class Upgrade {
-    protected final int x, y;
+    protected final int x;
+    protected final int y;
     protected boolean collected = false;
     protected boolean blinking = false;
 
@@ -19,9 +20,10 @@ public abstract class Upgrade {
                 Thread.sleep(5000);
                 if (!collected) {
                     collected = true;
-                    System.out.println("⏳ Upgrade at " + x + "," + y + " expired");
                 }
-            } catch (InterruptedException ignored) {}
+            } catch (InterruptedException e) {
+                System.out.println("smth went wrong in upgrade loop" + e.getMessage());
+            }
         }).start();
     }
 
@@ -34,24 +36,33 @@ public abstract class Upgrade {
                 try {
                     Thread.sleep(10000);
                     revertEffect(pacman);
-                } catch (InterruptedException ignored) {}
+                } catch (InterruptedException e) {
+                    System.out.println("smth went wrong in upgrade loop" + e.getMessage());
+                }
             }).start();
         }
     }
 
-    protected abstract void applyEffect(Pacman pacman);
+    protected abstract void applyEffect (Pacman pacman);
     protected abstract void revertEffect(Pacman pacman);
 
-    public int getX() { return x; }
-    public int getY() { return y; }
-    public boolean isCollected() { return collected; }
-    public boolean isBlinking() { return blinking; }
 
+    public int getX() {
+        return x;
+    }
+    public int getY() {
+        return y;
+    }
+    public boolean isCollected() {
+        return collected;
+    }
+    public boolean isBlinking() {
+        return blinking;
+    }
     public void setCollected(boolean collected) {
         this.collected = collected;
     }
-
-    public boolean isCollected(int col, int row) {
+    public boolean PacmanCollected(int col, int row) {
         return !collected && this.x == col && this.y == row;
     }
 }

@@ -8,12 +8,12 @@ import model.map.MapDesign;
 import model.map.MapType;
 import model.upgrades.*;
 import util.Resources;
+
 import java.awt.*;
 import java.util.ArrayList;
 import java.util.List;
 
 public class Logic {
-
 
     private final BlockType[][] logicMap;
     private final List<Ghost> ghosts = new ArrayList<>();
@@ -32,8 +32,8 @@ public class Logic {
         this.originalMapLayout = Resources.loadMapType(mapType);
         this.logicMap = MapDesign.loadLogicMap(originalMapLayout);
 
-        initializePacmanAndPortals(originalMapLayout);
-        initializeGhosts(originalMapLayout);
+        initializeEntities(originalMapLayout);
+
 
         if (pacman != null) {
             pacman.setLogic(this);
@@ -50,9 +50,51 @@ public class Logic {
         }
 
         for (Upgrade upgrade : upgrades) {
-            if (upgrade.isCollected(pacman.getCol(), pacman.getRow())) {
+            if (upgrade.PacmanCollected(pacman.getCol(), pacman.getRow())) {
                 upgrade.apply(pacman);
             }
+        }
+    }
+
+    private void initializeEntities(String[] map) {
+        for (int r = 0; r < map.length; r++) {
+            for (int c = 0; c < map[r].length(); c++) {
+                char cell = map[r].charAt(c);
+                switch (cell) {
+                    case 'I' -> pacman = new Pacman(r, c);
+                    case 'L' -> leftPortalPos = new Point(c, r);
+                    case 'R' -> rightPortalPos = new Point(c, r);
+                    case 'r' -> {
+                        Ghost ghost = new Ghost(r, c);
+                        ghost.setAnimationFrames(Resources.redGhostFrames);
+                        ghosts.add(ghost);
+                    }
+                    case 'p' -> {
+                        Ghost ghost = new Ghost(r, c);
+                        ghost.setAnimationFrames(Resources.pinkGhostFrames);
+                        ghosts.add(ghost);
+                    }
+                    case 'o' -> {
+                        Ghost ghost = new Ghost(r, c);
+                        ghost.setAnimationFrames(Resources.orangeGhostFrames);
+                        ghosts.add(ghost);
+                    }
+                    case 'b' -> {
+                        Ghost ghost = new Ghost(r, c);
+                        ghost.setAnimationFrames(Resources.blueGhostFrames);
+                        ghosts.add(ghost);
+                    }
+                }
+            }
+        }
+
+        if (pacman != null) {
+            pacman.setLogic(this);
+            pacman.setPortalPositions(leftPortalPos, rightPortalPos);
+        }
+
+        for (Ghost ghost : ghosts) {
+            ghost.setPortalPositions(leftPortalPos, rightPortalPos);
         }
     }
 
@@ -92,23 +134,24 @@ public class Logic {
             }
         }
     }
-
-    public boolean isAllFoodEaten() {
-        for (BlockType[] row : logicMap) {
-            for (BlockType cell : row) {
-                if (cell == BlockType.FOOD) return false;
-            }
-        }
-        return true;
-    }
-
     public void resetAllGhosts() {
         for (Ghost ghost : ghosts) {
             ghost.resetPosition();
         }
     }
 
-    public boolean hasUpgradeAt(int col, int row) {
+    public boolean isAllFoodEaten() {
+        for (BlockType[] row : logicMap) {
+            for (BlockType cell : row) {
+                if (cell == BlockType.FOOD) {
+                    return false;
+                }
+            }
+        }
+        return true;
+    }
+
+    public boolean blockHasUpgrade(int col, int row) {
         for (Upgrade upgrade : upgrades) {
             if (!upgrade.isCollected() && upgrade.getX() == col && upgrade.getY() == row) {
                 return true;
@@ -117,13 +160,19 @@ public class Logic {
         return false;
     }
 
-    public boolean hasUncollectedUpgradeOfType(Class<? extends Upgrade> type) {
+    public boolean hasUncollectedUpgrade(Class<? extends Upgrade> type) {
         for (Upgrade upgrade : upgrades) {
             if (!upgrade.isCollected() && type.isInstance(upgrade)) {
                 return true;
             }
         }
         return false;
+    }
+
+    private MapType determineMapType(int rows, int cols) {
+        return (rows == 17 && cols == 15) ? MapType.SMALL :
+                (rows == 19 && cols == 17) ? MapType.MEDIUM :
+                        MapType.LARGE;
     }
 
     public boolean isSpeedEffectActive() {
@@ -168,57 +217,5 @@ public class Logic {
 
     public int getScore() {
         return pacman.getScore();
-    }
-
-    private MapType determineMapType(int rows, int cols) {
-        return (rows == 17 && cols == 15) ? MapType.SMALL :
-                (rows == 19 && cols == 17) ? MapType.MEDIUM :
-                        MapType.LARGE;
-    }
-
-    private void initializePacmanAndPortals(String[] map) {
-        for (int r = 0; r < map.length; r++) {
-            for (int c = 0; c < map[r].length(); c++) {
-                char cell = map[r].charAt(c);
-                switch (cell) {
-                    case 'I' -> pacman = new Pacman(r, c);
-                    case 'L' -> leftPortalPos = new Point(c, r);
-                    case 'R' -> rightPortalPos = new Point(c, r);
-                }
-            }
-        }
-    }
-
-    private void initializeGhosts(String[] map) {
-        for (int r = 0; r < map.length; r++) {
-            for (int c = 0; c < map[r].length(); c++) {
-                Ghost ghost = null;
-                char cell = map[r].charAt(c);
-
-                switch (cell) {
-                    case 'r' -> {
-                        ghost = new Ghost(r, c);
-                        ghost.setAnimationFrames(Resources.redGhostFrames);
-                    }
-                    case 'p' -> {
-                        ghost = new Ghost(r, c);
-                        ghost.setAnimationFrames(Resources.pinkGhostFrames);
-                    }
-                    case 'o' -> {
-                        ghost = new Ghost(r, c);
-                        ghost.setAnimationFrames(Resources.orangeGhostFrames);
-                    }
-                    case 'b' -> {
-                        ghost = new Ghost(r, c);
-                        ghost.setAnimationFrames(Resources.blueGhostFrames);
-                    }
-                }
-
-                if (ghost != null) {
-                    ghost.setPortalPositions(leftPortalPos, rightPortalPos);
-                    ghosts.add(ghost);
-                }
-            }
-        }
     }
 }

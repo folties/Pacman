@@ -11,6 +11,6 @@ public interface Walkable {
     int getY();
     int getCol();
     int getRow();
-    Direction getDirection();
     void setDirection(Direction direction);
+    Direction getDirection();
 }

@@ -22,7 +22,9 @@ public abstract class AbstractAnimation extends Thread {
     protected void sleepThread() {
         try {
             Thread.sleep(getFrameDelay());
-        } catch (InterruptedException ignored) {}
+        } catch (InterruptedException e) {
+            System.out.println("animation thread goes wrong: " + e.getMessage());
+        }
     }
 
     protected abstract void updateSprite();

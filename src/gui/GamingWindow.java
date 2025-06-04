@@ -9,7 +9,6 @@ import main.MainWindow;
 import model.entities.Ghost;
 import model.map.BlockType;
 import model.map.MapType;
-import model.upgrades.Upgrade;
 import util.Resources;
 
 import javax.swing.*;
@@ -81,13 +80,15 @@ public class GamingWindow extends JPanel {
         topPanel.setBorder(BorderFactory.createEmptyBorder(10, 20, 10, 20)); // зовнішній відступ
 
         scoreLabel = new JLabel("Score: 0");
-        styleTopLabel(scoreLabel);
+        scoreLabel.setForeground(Color.WHITE);
+        scoreLabel.setFont(new Font("Rockwell", Font.BOLD, 30));
         topPanel.add(scoreLabel);
 
         topPanel.add(Box.createRigidArea(new Dimension(30, 0)));
 
         timeLabel = new JLabel("Time: 00:00");
-        styleTopLabel(timeLabel);
+        timeLabel.setForeground(Color.WHITE);
+        timeLabel.setFont(new Font("Rockwell", Font.BOLD, 30));
         topPanel.add(timeLabel);
 
         topPanel.add(Box.createRigidArea(new Dimension(30, 0)));
@@ -97,17 +98,12 @@ public class GamingWindow extends JPanel {
         heartsPanel.setBackground(Color.BLACK);
         for (int i = 0; i < gameLogic.getPacman().getLives(); i++) {
             JLabel heart = new JLabel(Resources.heartIcon);
-            heart.setBorder(BorderFactory.createEmptyBorder(0, 5, 0, 5)); // внутрішній відступ між серцями
+            heart.setBorder(BorderFactory.createEmptyBorder(0, 5, 0, 5));
             heartLabels.add(heart);
             heartsPanel.add(heart);
         }
 
         topPanel.add(heartsPanel);
-    }
-
-    private void styleTopLabel(JLabel label) {
-        label.setForeground(Color.WHITE);
-        label.setFont(new Font("Rockwell", Font.BOLD, 30));
     }
 
     private void initGridAndLayers(int rows, int cols) {
@@ -140,7 +136,9 @@ public class GamingWindow extends JPanel {
                 SwingUtilities.invokeLater(() -> countdownLabel.setText("1"));
                 Thread.sleep(1000);
                 SwingUtilities.invokeLater(() -> countdownLabel.setVisible(false));
-            } catch (InterruptedException ignored) {}
+            } catch (InterruptedException e) {
+                System.out.println("countdown thread goes wrong: " + e.getMessage());
+            }
 
             gameLoop = new PacmanLoop(gameLogic, this, () -> {
                 updateGrid();
@@ -175,91 +173,22 @@ public class GamingWindow extends JPanel {
         for (int r = 0; r < rows; r++) {
             for (int c = 0; c < cols; c++) {
                 JLabel label = new JLabel();
-                label.setHorizontalAlignment(SwingConstants.CENTER);
-                label.setVerticalAlignment(SwingConstants.CENTER);
-                label.setPreferredSize(new Dimension(blockSize, blockSize));
                 cells[r][c] = label;
 
-                Image image = Resources.getImageForBlockType(logicMap[r][c]);
-                if (image != null) label.setIcon(new ImageIcon(image));
-
-                JPanel cell = new JPanel(new BorderLayout());
-                cell.setPreferredSize(new Dimension(blockSize, blockSize));
-                cell.setBackground(Color.BLACK);
-                cell.add(label, BorderLayout.CENTER);
-
+                JPanel cell = GridRender.createCell(label, blockSize);
                 gridPanel.add(cell);
             }
         }
 
+        GridRender.renderBlockGrid(cells, logicMap, blockSize);
         return gridPanel;
-    }
-
-    private JLayeredPane buildLayeredPane(JPanel gridPanel) {
-        int width = gridPanel.getPreferredSize().width;
-        int height = gridPanel.getPreferredSize().height;
-
-        JLayeredPane layeredPane = new JLayeredPane();
-        layeredPane.setPreferredSize(new Dimension(width, height));
-        layeredPane.setLayout(null);
-
-        gridPanel.setBounds(0, 0, width, height);
-        layeredPane.add(gridPanel, Integer.valueOf(0));
-
-        pacmanLabel = new JLabel();
-        pacmanLabel.setBounds(gameLogic.getPacman().getX(), gameLogic.getPacman().getY(), blockSize, blockSize);
-        layeredPane.add(pacmanLabel, Integer.valueOf(1));
-
-        for (Ghost ghost : gameLogic.getGhosts()) {
-            JLabel ghostLabel = new JLabel();
-            ghostLabel.setBounds(ghost.getX(), ghost.getY(), blockSize, blockSize);
-            layeredPane.add(ghostLabel, Integer.valueOf(1));
-
-            GhostLoop loop = new GhostLoop(ghost, gameLogic.getLogicMap(), ghostLabel, gameLogic, this);
-            ghostLoops.add(loop);
-
-            ghostAnimation = new GhostAnimation(ghostLabel, ghost);
-            ghostAnimation.start();
-        }
-
-        pacmanAnimation = new PacmanAnimation(pacmanLabel, gameLogic.getPacman());
-        pacmanAnimation.start();
-
-        leftPortalLabel = new JLabel();
-        Point leftPortal = gameLogic.getLeftPortalPos();
-        leftPortalLabel.setBounds(leftPortal.x * blockSize, leftPortal.y * blockSize, blockSize, blockSize);
-        layeredPane.add(leftPortalLabel, Integer.valueOf(1));
-
-        rightPortalLabel = new JLabel();
-        Point rightPortal = gameLogic.getRightPortalPos();
-        rightPortalLabel.setBounds(rightPortal.x * blockSize, rightPortal.y * blockSize, blockSize, blockSize);
-        layeredPane.add(rightPortalLabel, Integer.valueOf(1));
-
-        new PortalAnimation(leftPortalLabel, Resources.leftPortalFrames).start();
-        new PortalAnimation(rightPortalLabel, Resources.rightPortalFrames).start();
-
-        pausePanel = new PausePanel(this::resumeGame, () -> {
-            gameController.stopAll();
-            mainWindow.showGameMenu();
-        });
-        pausePanel.setBounds(0, 0, width, height);
-        pausePanel.setBorder(new LineBorder(new Color(200,100,10), 5));
-        pausePanel.setVisible(false);
-        layeredPane.add(pausePanel, Integer.valueOf(5));
-
-        countdownLabel = new JLabel("", SwingConstants.CENTER);
-        countdownLabel.setFont(new Font("Jokerman", Font.BOLD, 100));
-        countdownLabel.setForeground(new Color(150,10,10));
-        countdownLabel.setBounds(0, height / 2 - 50, width, 100);
-        countdownLabel.setVisible(true);
-        layeredPane.add(countdownLabel, Integer.valueOf(6)); // above pausePanel
-
-        return layeredPane;
     }
 
     public void showCountdownThenResume() {
         paused = true;
         gameController.pauseGame();
+
+        resetEntityPositions();
 
         new Thread(() -> {
             try {
@@ -274,8 +203,21 @@ public class GamingWindow extends JPanel {
                     paused = false;
                     gameController.resumeGame();
                 });
-            } catch (InterruptedException ignored) {}
+            } catch (InterruptedException e) {
+               System.out.println("countdown thread goes wrong " + e.getMessage());
+            }
         }).start();
+    }
+
+    public void resetEntityPositions() {
+        SwingUtilities.invokeLater(() -> {
+            pacmanLabel.setLocation(gameLogic.getPacman().getX(), gameLogic.getPacman().getY());
+            for (int i = 0; i < ghostLoops.size(); i++) {
+                Ghost ghost = gameLogic.getGhosts().get(i);
+                JLabel ghostLabel = ghostLoops.get(i).getLabel();
+                ghostLabel.setLocation(ghost.getX(), ghost.getY());
+            }
+        });
     }
 
     private void initController() {
@@ -345,33 +287,69 @@ public class GamingWindow extends JPanel {
             }
         }
 
-        for (Upgrade upgrade : gameLogic.getUpgrades()) {
-            if (!upgrade.isCollected()) {
-                int x = upgrade.getX();
-                int y = upgrade.getY();
+        UpgradeRender.render(gameLogic.getUpgrades(), cells);
+    }
 
-                boolean visible = true;
+    private JLayeredPane buildLayeredPane(JPanel gridPanel) {
+        int width = gridPanel.getPreferredSize().width;
+        int height = gridPanel.getPreferredSize().height;
 
-                if (upgrade.isBlinking()) {
-                    long time = System.currentTimeMillis();
-                    visible = (time / 500) % 2 == 0;
-                }
+        JLayeredPane layeredPane = new JLayeredPane();
+        layeredPane.setPreferredSize(new Dimension(width, height));
+        layeredPane.setLayout(null);
 
-                if (visible) {
-                    Image img = switch (upgrade.getClass().getSimpleName()) {
-                        case "SpeedUpgrade" -> Resources.speedUpgradeImage;
-                        case "ExtraLifeUpgrade" -> Resources.extraLifeUpgradeImage;
-                        case "ProtectionUpgrade" -> Resources.protectionUpgradeImage;
-                        default -> null;
-                    };
-                    if (img != null) {
-                        cells[y][x].setIcon(new ImageIcon(img));
-                    }
-                } else {
-                    cells[y][x].setIcon(null);
-                }
-            }
+        gridPanel.setBounds(0, 0, width, height);
+        layeredPane.add(gridPanel, Integer.valueOf(0));
+
+        pacmanLabel = new JLabel();
+        pacmanLabel.setBounds(gameLogic.getPacman().getX(), gameLogic.getPacman().getY(), blockSize, blockSize);
+        layeredPane.add(pacmanLabel, Integer.valueOf(1));
+
+        for (Ghost ghost : gameLogic.getGhosts()) {
+            JLabel ghostLabel = new JLabel();
+            ghostLabel.setBounds(ghost.getX(), ghost.getY(), blockSize, blockSize);
+            layeredPane.add(ghostLabel, Integer.valueOf(1));
+
+            GhostLoop loop = new GhostLoop(ghost, gameLogic.getLogicMap(), ghostLabel, gameLogic, this);
+            ghostLoops.add(loop);
+
+            ghostAnimation = new GhostAnimation(ghostLabel, ghost);
+            ghostAnimation.start();
         }
+
+        pacmanAnimation = new PacmanAnimation(pacmanLabel, gameLogic.getPacman());
+        pacmanAnimation.start();
+
+        leftPortalLabel = new JLabel();
+        Point leftPortal = gameLogic.getLeftPortalPos();
+        leftPortalLabel.setBounds(leftPortal.x * blockSize, leftPortal.y * blockSize, blockSize, blockSize);
+        layeredPane.add(leftPortalLabel, Integer.valueOf(1));
+
+        rightPortalLabel = new JLabel();
+        Point rightPortal = gameLogic.getRightPortalPos();
+        rightPortalLabel.setBounds(rightPortal.x * blockSize, rightPortal.y * blockSize, blockSize, blockSize);
+        layeredPane.add(rightPortalLabel, Integer.valueOf(1));
+
+        new PortalAnimation(leftPortalLabel, Resources.leftPortalFrames).start();
+        new PortalAnimation(rightPortalLabel, Resources.rightPortalFrames).start();
+
+        pausePanel = new PausePanel(this::resumeGame, () -> {
+            gameController.stopAll();
+            mainWindow.showGameMenu();
+        });
+        pausePanel.setBounds(0, 0, width, height);
+        pausePanel.setBorder(new LineBorder(new Color(200,100,10), 5));
+        pausePanel.setVisible(false);
+        layeredPane.add(pausePanel, Integer.valueOf(5));
+
+        countdownLabel = new JLabel("", SwingConstants.CENTER);
+        countdownLabel.setFont(new Font("Jokerman", Font.BOLD, 100));
+        countdownLabel.setForeground(new Color(150,10,10));
+        countdownLabel.setBounds(0, height / 2 - 50, width, 100);
+        countdownLabel.setVisible(true);
+        layeredPane.add(countdownLabel, Integer.valueOf(6)); // above pausePanel
+
+        return layeredPane;
     }
 }
 

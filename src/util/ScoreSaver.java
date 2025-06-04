@@ -11,7 +11,7 @@ public class ScoreSaver {
         try (FileWriter writer = new FileWriter(FILE_PATH, true)) {
             writer.write(name + "," + score + "," + timeInSeconds + "\n");
         } catch (IOException e) {
-            e.printStackTrace();
+            System.out.println("smth gone wrong in writing to file" + e.getMessage());
         }
     }
 
@@ -23,6 +23,7 @@ public class ScoreSaver {
                 lines.add(line);
             }
         } catch (IOException e) {
+            System.out.println("smth gone wrong in reading file" + e.getMessage());
         }
         return lines;
     }

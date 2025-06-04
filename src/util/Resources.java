@@ -224,7 +224,7 @@ public class Resources {
 
         try (InputStream in = MapDesign.class.getClassLoader().getResourceAsStream(filePath)) {
             if (in == null) {
-                throw new RuntimeException("Map file not found: " + filePath);
+                throw new RuntimeException("can't find map file: " + filePath);
             }
             BufferedReader reader = new BufferedReader(new InputStreamReader(in));
             String line;
@@ -245,7 +245,7 @@ public class Resources {
     private static Image loadImage(String path) {
         URL url = Resources.class.getClassLoader().getResource(path);
         if (url == null) {
-            throw new RuntimeException("Image resource not found: " + path);
+            throw new RuntimeException("can't find image file: " + path);
         }
         return new ImageIcon(url).getImage();
     }
@@ -253,7 +253,7 @@ public class Resources {
     private static ImageIcon loadImageIcon(String path) {
         URL url = Resources.class.getClassLoader().getResource(path);
         if (url == null) {
-            throw new RuntimeException("Image resource not found: " + path);
+            throw new RuntimeException("can't find image file: " + path);
         }
         return new ImageIcon(url);
     }

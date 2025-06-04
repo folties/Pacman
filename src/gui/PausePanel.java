@@ -4,6 +4,8 @@ import util.Resources;
 import javax.swing.*;
 import javax.swing.border.LineBorder;
 import java.awt.*;
+import java.awt.event.MouseAdapter;
+import java.awt.event.MouseEvent;
 
 public class PausePanel extends JPanel {
 
@@ -45,14 +47,11 @@ public class PausePanel extends JPanel {
         button.setMaximumSize(new Dimension(300, 60));
         button.setFocusPainted(false);
 
-        button.addMouseListener(new java.awt.event.MouseAdapter() {
-            @Override
-            public void mouseEntered(java.awt.event.MouseEvent evt) {
+        button.addMouseListener(new MouseAdapter() {
+            public void mouseEntered(MouseEvent event) {
                 button.setBackground(new Color(100, 0, 0));
             }
-
-            @Override
-            public void mouseExited(java.awt.event.MouseEvent evt) {
+            public void mouseExited(MouseEvent evt) {
                 button.setBackground(Color.BLACK);
             }
         });

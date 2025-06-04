@@ -33,7 +33,7 @@ public class GhostLoop extends Thread {
 
         while (running) {
             if (paused) {
-                sleepSafely(50);
+                sleep(50);
                 continue;
             }
 
@@ -44,14 +44,14 @@ public class GhostLoop extends Thread {
                     ghostLabel.setLocation(ghost.getX(), ghost.getY())
             );
 
-            sleepSafely(16);
+            sleep(16);
         }
     }
 
     private void startUpgradeSpawner() {
         new Thread(() -> {
             while (running) {
-                sleepSafely(5000);
+                sleep(5000);
 
                 if (paused || logic.isSpeedEffectActive() || logic.isProtectionEffectActive()) continue;
 
@@ -61,16 +61,16 @@ public class GhostLoop extends Thread {
                     BlockType current = map[row][col];
 
                     synchronized (logic) {
-                        boolean validSpot = (current == BlockType.EMPTY || current == BlockType.FOOD) && !logic.hasUpgradeAt(col, row);
+                        boolean validSpot = (current == BlockType.EMPTY || current == BlockType.FOOD) && !logic.blockHasUpgrade(col, row);
 
                         if (validSpot) {
                             double chance = Math.random();
 
-                            if (chance < 0.33 && !logic.hasUncollectedUpgradeOfType(SpeedUpgrade.class)) {
+                            if (chance < 0.33 && !logic.hasUncollectedUpgrade(SpeedUpgrade.class)) {
                                 logic.getUpgrades().add(new SpeedUpgrade(col, row));
-                            } else if (chance < 0.66 && !logic.hasUncollectedUpgradeOfType(ExtraLifeUpgrade.class)) {
+                            } else if (chance < 0.66 && !logic.hasUncollectedUpgrade(ExtraLifeUpgrade.class)) {
                                 logic.getUpgrades().add(new ExtraLifeUpgrade(col, row));
-                            } else if (!logic.hasUncollectedUpgradeOfType(ProtectionUpgrade.class)) {
+                            } else if (!logic.hasUncollectedUpgrade(ProtectionUpgrade.class)) {
                                 logic.getUpgrades().add(new ProtectionUpgrade(col, row));
                             }
                         }
@@ -79,6 +79,11 @@ public class GhostLoop extends Thread {
             }
         }).start();
     }
+
+    public JLabel getLabel() {
+        return ghostLabel;
+    }
+
 
     public void stopLoop() {
         running = false;
@@ -92,10 +97,11 @@ public class GhostLoop extends Thread {
         paused = false;
     }
 
-    private void sleepSafely(int millis) {
+    private void sleep(int time) {
         try {
-            Thread.sleep(millis);
-        } catch (InterruptedException ignored) {
+            Thread.sleep(time);
+        } catch (InterruptedException e) {
+            System.out.println("ghost loop thread goes wrong: " + e.getMessage());
         }
     }
 }

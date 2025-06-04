@@ -6,15 +6,12 @@ import javax.swing.*;
 
 public class PacmanLoop extends Thread {
 
-
     private final Logic logic;
     private final GamingWindow gamingWindow;
     private final Runnable onFrameUpdate;
 
-
     private volatile boolean running = true;
     private volatile boolean paused = false;
-
 
     public PacmanLoop(Logic logic, GamingWindow gamingWindow, Runnable onFrameUpdate) {
         this.logic = logic;
@@ -28,14 +25,14 @@ public class PacmanLoop extends Thread {
 
         while (running && pacman.getLives() > 0) {
             if (paused) {
-                sleepSafely(50);
+                sleep(50);
                 continue;
             }
 
             logic.update(gamingWindow);
             onFrameUpdate.run();
 
-            sleepSafely(16);
+            sleep(16);
         }
         if (running && !paused && pacman.getLives() <= 0) {
             SwingUtilities.invokeLater(gamingWindow::endGame);
@@ -54,10 +51,11 @@ public class PacmanLoop extends Thread {
         running = false;
     }
 
-    private void sleepSafely(int millis) {
+    private void sleep(int time) {
         try {
-            Thread.sleep(millis);
-        } catch (InterruptedException ignored) {
+            Thread.sleep(time);
+        } catch (InterruptedException e) {
+            System.out.println("pacman loop thread goes wrong: " + e.getMessage());
         }
     }
 }

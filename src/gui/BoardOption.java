@@ -7,6 +7,8 @@ import util.Resources;
 import javax.swing.*;
 import javax.swing.border.LineBorder;
 import java.awt.*;
+import java.awt.event.MouseAdapter;
+import java.awt.event.MouseEvent;
 
 public class BoardOption extends JPanel {
 
@@ -32,11 +34,14 @@ public class BoardOption extends JPanel {
         add(largeButton);
     }
 
-    @Override
-    protected void paintComponent(Graphics g) {
-        super.paintComponent(g);
-        g.drawImage(backgroundImage, 0, 0, getWidth(), getHeight(), this);
+    private JLabel createTitleLabel(String text) {
+        JLabel label = new JLabel(text);
+        label.setFont(new Font("Rockwell", Font.BOLD, 50));
+        label.setForeground(new Color(245, 200, 10));
+        label.setAlignmentX(Component.CENTER_ALIGNMENT);
+        return label;
     }
+
 
     private JButton createOptionButton(MainWindow mainWindow, String text, MapType mapType) {
         JButton button = new JButton(text);
@@ -48,14 +53,14 @@ public class BoardOption extends JPanel {
         button.setMaximumSize(new Dimension(300, 60));
         button.setFocusPainted(false);
 
-        button.addMouseListener(new java.awt.event.MouseAdapter() {
+        button.addMouseListener(new MouseAdapter() {
             @Override
-            public void mouseEntered(java.awt.event.MouseEvent evt) {
+            public void mouseEntered(MouseEvent event) {
                 button.setBackground(new Color(100, 0, 0));
             }
 
             @Override
-            public void mouseExited(java.awt.event.MouseEvent evt) {
+            public void mouseExited(MouseEvent evt) {
                 button.setBackground(Color.BLACK);
             }
         });
@@ -65,11 +70,9 @@ public class BoardOption extends JPanel {
         return button;
     }
 
-    private JLabel createTitleLabel(String text) {
-        JLabel label = new JLabel(text);
-        label.setFont(new Font("Rockwell", Font.BOLD, 50));
-        label.setForeground(new Color(245, 200, 10));
-        label.setAlignmentX(Component.CENTER_ALIGNMENT);
-        return label;
+    @Override
+    protected void paintComponent(Graphics g) {
+        super.paintComponent(g);
+        g.drawImage(backgroundImage, 0, 0, getWidth(), getHeight(), this);
     }
 }

@@ -7,6 +7,8 @@ import util.ScoreSaver;
 import javax.swing.*;
 import javax.swing.border.LineBorder;
 import java.awt.*;
+import java.awt.event.MouseAdapter;
+import java.awt.event.MouseEvent;
 
 public class GameEnd extends JPanel {
 
@@ -19,17 +21,15 @@ public class GameEnd extends JPanel {
 
         setLayout(new BorderLayout());
 
-        // Create components
         JLabel gameOverLabel = createLabel("Game Over", new Font("Rockwell", Font.BOLD, 100), new Color(100, 0, 0));
         JLabel scoreLabel = createLabel("Score: " + finalScore, new Font("Rockwell", Font.PLAIN, 30), new Color(150, 150, 150));
-        JLabel timeLabel = createLabel("Time: " + formatTime(finalSeconds), new Font("Rockwell", Font.PLAIN, 30), new Color(150, 150, 150));
+        JLabel timeLabel = createLabel("Time: " + String.format("%02d:%02d", finalSeconds / 60, finalSeconds % 60), new Font("Rockwell", Font.PLAIN, 30), new Color(150, 150, 150));
         JLabel nameLabel = createLabel("Label your game:", new Font("Rockwell", Font.PLAIN, 30), new Color(150, 150, 150));
 
         JTextField nameField = createNameField();
         JButton saveButton = createSaveButton(nameField, finalScore, finalSeconds);
         JButton returnButton = createReturnButton();
 
-        // Center content layout
         JPanel centerContent = new JPanel();
         centerContent.setLayout(new BoxLayout(centerContent, BoxLayout.Y_AXIS));
         centerContent.setBackground(Color.BLACK);
@@ -50,12 +50,6 @@ public class GameEnd extends JPanel {
         centerContent.add(returnButton);
 
         add(centerContent, BorderLayout.CENTER);
-    }
-
-    @Override
-    protected void paintComponent(Graphics g) {
-        super.paintComponent(g);
-        g.drawImage(backgroundImage, 0, 0, getWidth(), getHeight(), this);
     }
 
     private JLabel createLabel(String text, Font font, Color color) {
@@ -110,14 +104,13 @@ public class GameEnd extends JPanel {
         button.setMaximumSize(new Dimension(300, 60));
         button.setFocusPainted(false);
 
-        button.addMouseListener(new java.awt.event.MouseAdapter() {
+        button.addMouseListener(new MouseAdapter() {
             @Override
-            public void mouseEntered(java.awt.event.MouseEvent evt) {
+            public void mouseEntered(MouseEvent event) {
                 button.setBackground(new Color(100, 0, 0));
             }
-
             @Override
-            public void mouseExited(java.awt.event.MouseEvent evt) {
+            public void mouseExited(MouseEvent event) {
                 button.setBackground(Color.BLACK);
             }
         });
@@ -125,7 +118,9 @@ public class GameEnd extends JPanel {
         return button;
     }
 
-    private String formatTime(int totalSeconds) {
-        return String.format("%02d:%02d", totalSeconds / 60, totalSeconds % 60);
+    @Override
+    protected void paintComponent(Graphics g) {
+        super.paintComponent(g);
+        g.drawImage(backgroundImage, 0, 0, getWidth(), getHeight(), this);
     }
 }

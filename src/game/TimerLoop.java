@@ -3,28 +3,28 @@ package game;
 public class TimerLoop extends Thread {
 
     private int seconds = 0;
-    private final Runnable onTick;
+    private final Runnable timeUpdater;
 
     private volatile boolean running = true;
     private volatile boolean paused = false;
 
-    public TimerLoop(Runnable onTick) {
-        this.onTick = onTick;
+    public TimerLoop(Runnable timeUpdater) {
+        this.timeUpdater = timeUpdater;
     }
 
     @Override
     public void run() {
         while (running) {
             if (paused) {
-                sleepSafely(50);
+                sleep(50);
                 continue;
             }
 
-            sleepSafely(1000); // Wait 1 second
+            sleep(1000);
 
             if (!paused && running) {
                 seconds++;
-                onTick.run();
+                timeUpdater.run();
             }
         }
     }
@@ -45,10 +45,11 @@ public class TimerLoop extends Thread {
         return seconds;
     }
 
-    private void sleepSafely(int millis) {
+    private void sleep(int time) {
         try {
-            Thread.sleep(millis);
-        } catch (InterruptedException ignored) {
+            Thread.sleep(time);
+        } catch (InterruptedException e) {
+            System.out.println("timer thread goes wrong: " + e.getMessage());
         }
     }
 }
