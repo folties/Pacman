@@ -5,41 +5,30 @@ import util.Direction;
 
 import javax.swing.*;
 import java.awt.*;
-import java.util.Map;
 
-public class PacmanAnimation extends Thread {
-    private final JLabel pacmanLabel;
+public class PacmanAnimation extends AbstractAnimation {
     private final Pacman pacman;
-    private int frameIndex = 0;
-    private boolean running = true;
 
-    public PacmanAnimation(JLabel pacmanLabel, Pacman pacman) {
-        this.pacmanLabel = pacmanLabel;
+    public PacmanAnimation(JLabel label, Pacman pacman) {
+        super(label);
         this.pacman = pacman;
-
-    }
-
-    public void stopAnimation() {
-        running = false;
     }
 
     @Override
-    public void run() {
-        while (running) {
-            Direction direction = pacman.getDirection();
-            Image[] frames = pacman.getFrames().get(direction);// ✅ Get current frames dynamically
-            if (frames != null && frames.length > 0) {
-                SwingUtilities.invokeLater(() ->
-                        pacmanLabel.setIcon(new ImageIcon(frames[frameIndex]))
-                );
+    protected void updateSprite() {
+        Direction dir = pacman.getDirection();
+        Image[] frames = pacman.getFrames().get(dir);
 
-                frameIndex = (frameIndex + 1) % frames.length;
-            }
-
-            try {
-                Thread.sleep(100); // animation speed
-            } catch (InterruptedException ignored) {}
+        if (frames != null && frames.length > 0) {
+            SwingUtilities.invokeLater(() ->
+                    label.setIcon(new ImageIcon(frames[frameIndex]))
+            );
+            frameIndex = (frameIndex + 1) % frames.length;
         }
     }
 
+    @Override
+    protected int getFrameDelay() {
+        return 100;
+    }
 }

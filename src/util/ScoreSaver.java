@@ -23,9 +23,7 @@ public class ScoreSaver {
                 lines.add(line);
             }
         } catch (IOException e) {
-            // silently ignore if file doesn't exist
         }
-
         return lines;
     }
 }

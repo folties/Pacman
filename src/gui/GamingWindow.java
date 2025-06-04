@@ -9,9 +9,6 @@ import main.MainWindow;
 import model.entities.Ghost;
 import model.map.BlockType;
 import model.map.MapType;
-import model.upgrades.ExtraLifeUpgrade;
-import model.upgrades.ProtectionUpgrade;
-import model.upgrades.SpeedUpgrade;
 import model.upgrades.Upgrade;
 import util.Resources;
 
@@ -24,19 +21,19 @@ import java.util.ArrayList;
 import java.util.List;
 
 public class GamingWindow extends JPanel {
-    private static final int blockSize = 45;
+    private static final int blockSize = Resources.BLOCK_SIZE;
 
     private final MainWindow mainWindow;
     private final Logic gameLogic;
-    // === Upgrades ===
 
     private JLabel[][] cells;
     private JLabel pacmanLabel;
     private JLabel leftPortalLabel, rightPortalLabel;
     private final List<JLabel> heartLabels = new ArrayList<>();
-
     private final List<GhostLoop> ghostLoops = new ArrayList<>();
+
     private PacmanAnimation pacmanAnimation;
+    private GhostAnimation ghostAnimation;
 
     private PacmanLoop gameLoop;
     private TimerLoop timerLoop;
@@ -61,7 +58,7 @@ public class GamingWindow extends JPanel {
         initController();
         initGridAndLayers(rows, cols);
         initTopPanel();
-        startLoops(); // loops + GameController
+        startLoops();
     }
 
     private void setupUI() {
@@ -76,35 +73,42 @@ public class GamingWindow extends JPanel {
             case LARGE -> new int[]{21, 19};
         };
     }
+
     private void createTopPanel() {
-        topPanel = new JPanel(new BorderLayout());
+        topPanel = new JPanel();
+        topPanel.setLayout(new BoxLayout(topPanel, BoxLayout.X_AXIS));
         topPanel.setBackground(Color.BLACK);
+        topPanel.setBorder(BorderFactory.createEmptyBorder(10, 20, 10, 20)); // зовнішній відступ
 
-        // Time label (center)
-        timeLabel = new JLabel("Time: 00:00");
-        timeLabel.setForeground(Color.WHITE);
-        timeLabel.setFont(new Font("Rockwell", Font.BOLD, 30));
-        timeLabel.setBorder(BorderFactory.createEmptyBorder(0, 400, 0, 0));
-        topPanel.add(timeLabel, BorderLayout.CENTER);
-
-        // Score label (left)
         scoreLabel = new JLabel("Score: 0");
-        scoreLabel.setForeground(Color.WHITE);
-        scoreLabel.setFont(new Font("Rockwell", Font.BOLD, 30));
-        topPanel.add(scoreLabel, BorderLayout.WEST);
+        styleTopLabel(scoreLabel);
+        topPanel.add(scoreLabel);
 
-        // Hearts panel (right)
+        topPanel.add(Box.createRigidArea(new Dimension(30, 0)));
+
+        timeLabel = new JLabel("Time: 00:00");
+        styleTopLabel(timeLabel);
+        topPanel.add(timeLabel);
+
+        topPanel.add(Box.createRigidArea(new Dimension(30, 0)));
+
         JPanel heartsPanel = new JPanel();
+        heartsPanel.setLayout(new BoxLayout(heartsPanel, BoxLayout.X_AXIS));
         heartsPanel.setBackground(Color.BLACK);
-        heartsPanel.setBorder(BorderFactory.createEmptyBorder(0, 100, 0, 0));
         for (int i = 0; i < gameLogic.getPacman().getLives(); i++) {
             JLabel heart = new JLabel(Resources.heartIcon);
+            heart.setBorder(BorderFactory.createEmptyBorder(0, 5, 0, 5)); // внутрішній відступ між серцями
             heartLabels.add(heart);
             heartsPanel.add(heart);
         }
-        topPanel.add(heartsPanel, BorderLayout.EAST);
+
+        topPanel.add(heartsPanel);
     }
 
+    private void styleTopLabel(JLabel label) {
+        label.setForeground(Color.WHITE);
+        label.setFont(new Font("Rockwell", Font.BOLD, 30));
+    }
 
     private void initGridAndLayers(int rows, int cols) {
         JPanel gridPanel = buildGridPanel(rows, cols);
@@ -138,7 +142,6 @@ public class GamingWindow extends JPanel {
                 SwingUtilities.invokeLater(() -> countdownLabel.setVisible(false));
             } catch (InterruptedException ignored) {}
 
-            // Start loops after countdown
             gameLoop = new PacmanLoop(gameLogic, this, () -> {
                 updateGrid();
                 SwingUtilities.invokeLater(() -> {
@@ -212,10 +215,11 @@ public class GamingWindow extends JPanel {
             ghostLabel.setBounds(ghost.getX(), ghost.getY(), blockSize, blockSize);
             layeredPane.add(ghostLabel, Integer.valueOf(1));
 
-            GhostLoop loop = new GhostLoop(ghost, gameLogic.getLogicMap(), ghostLabel, gameLogic.getPacman(), gameLogic, this);
+            GhostLoop loop = new GhostLoop(ghost, gameLogic.getLogicMap(), ghostLabel, gameLogic, this);
             ghostLoops.add(loop);
 
-            new GhostAnimation(ghostLabel, ghost).start();
+            ghostAnimation = new GhostAnimation(ghostLabel, ghost);
+            ghostAnimation.start();
         }
 
         pacmanAnimation = new PacmanAnimation(pacmanLabel, gameLogic.getPacman());
@@ -250,7 +254,6 @@ public class GamingWindow extends JPanel {
         countdownLabel.setVisible(true);
         layeredPane.add(countdownLabel, Integer.valueOf(6)); // above pausePanel
 
-
         return layeredPane;
     }
 
@@ -274,7 +277,6 @@ public class GamingWindow extends JPanel {
             } catch (InterruptedException ignored) {}
         }).start();
     }
-
 
     private void initController() {
         PacmanKeyController controller = new PacmanKeyController(gameLogic.getPacman());
@@ -343,7 +345,6 @@ public class GamingWindow extends JPanel {
             }
         }
 
-        // Render active upgrades with correct image
         for (Upgrade upgrade : gameLogic.getUpgrades()) {
             if (!upgrade.isCollected()) {
                 int x = upgrade.getX();
@@ -351,10 +352,9 @@ public class GamingWindow extends JPanel {
 
                 boolean visible = true;
 
-                // If blinking mode is active: toggle visibility every ~500 ms
                 if (upgrade.isBlinking()) {
                     long time = System.currentTimeMillis();
-                    visible = (time / 500) % 2 == 0; // blink on/off every 500 ms
+                    visible = (time / 500) % 2 == 0;
                 }
 
                 if (visible) {
@@ -368,11 +368,10 @@ public class GamingWindow extends JPanel {
                         cells[y][x].setIcon(new ImageIcon(img));
                     }
                 } else {
-                    cells[y][x].setIcon(null); // hide during blink
+                    cells[y][x].setIcon(null);
                 }
             }
         }
-
     }
 }
 

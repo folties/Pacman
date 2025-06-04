@@ -3,8 +3,6 @@ package util;
 import model.map.BlockType;
 import model.map.MapDesign;
 import model.map.MapType;
-
-
 import javax.swing.*;
 import java.awt.*;
 import java.io.BufferedReader;
@@ -17,6 +15,8 @@ import java.util.List;
 import java.util.Map;
 
 public class Resources {
+    public static final int BLOCK_SIZE = 45;
+
     public static Image menuBackgroundImage;
     public static Image optionBackgroundImage;
     public static Image wallImage;

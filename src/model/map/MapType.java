@@ -10,7 +10,6 @@ public enum MapType {
     MapType(String path) {
         this.path = path;
     }
-
     public String getPath() {
         return path;
     }

@@ -6,38 +6,29 @@ import util.Direction;
 import javax.swing.*;
 import java.awt.*;
 
-public class GhostAnimation extends Thread {
-    private final JLabel ghostLabel;
+public class GhostAnimation extends AbstractAnimation {
     private final Ghost ghost;
-    private int frameIndex = 0;
-    private boolean running = true;
 
-    public GhostAnimation(JLabel ghostLabel, Ghost ghost) {
-        this.ghostLabel = ghostLabel;
+    public GhostAnimation(JLabel label, Ghost ghost) {
+        super(label);
         this.ghost = ghost;
     }
 
     @Override
-    public void run() {
-        while (running) {
-            Direction direction = ghost.getDirection();
-            Image[] frames = ghost.getFramesForDirection(direction);
+    protected void updateSprite() {
+        Direction dir = ghost.getDirection();
+        Image[] frames = ghost.getFramesForDirection(dir);
 
-            if (frames != null && frames.length > 0) {
-                ghostLabel.setIcon(new ImageIcon(frames[frameIndex]));
-                frameIndex = (frameIndex + 1) % frames.length;
-            }
-
-            ghostLabel.setLocation(ghost.getX(), ghost.getY());
-
-            try {
-                Thread.sleep(120); // adjust for animation speed
-            } catch (InterruptedException ignored) {}
+        if (frames != null && frames.length > 0) {
+            SwingUtilities.invokeLater(() ->
+                    label.setIcon(new ImageIcon(frames[frameIndex]))
+            );
+            frameIndex = (frameIndex + 1) % frames.length;
         }
     }
 
-    public void stopAnimation() {
-        running = false;
+    @Override
+    protected int getFrameDelay() {
+        return 120;
     }
 }
-

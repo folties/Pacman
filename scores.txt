@@ -23,3 +23,5 @@ sorry,2090,102
 tvar,4160,185
 da kak tak to,2050,106
 ny blin ny,3700,206
+lll,350,9
+lol,280,10

@@ -1,5 +1,4 @@
 package model.map;
-
 public class MapDesign {
 
     public static BlockType[][] loadLogicMap(String[] mapLines) {
@@ -21,10 +20,11 @@ public class MapDesign {
                     case 'b' -> BlockType.GHOST_BLUE;
                     case 'L' -> BlockType.LEFT_PORTAL;
                     case 'R' -> BlockType.RIGHT_PORTAL;
-                    default -> BlockType.EMPTY;
+                    default  -> BlockType.EMPTY;
                 };
             }
         }
+
         return logicMap;
     }
 }

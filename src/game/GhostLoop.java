@@ -2,47 +2,34 @@ package game;
 
 import gui.GamingWindow;
 import model.entities.Ghost;
-import model.entities.Pacman;
 import model.map.BlockType;
 import model.upgrades.ExtraLifeUpgrade;
 import model.upgrades.ProtectionUpgrade;
 import model.upgrades.SpeedUpgrade;
-
 import javax.swing.*;
-import java.awt.*;
 
-/**
- * GhostLoop controls the movement and collision logic for a single ghost.
- * Each ghost runs in its own thread and updates its position independently.
- */
 public class GhostLoop extends Thread {
-    private final GamingWindow gamingWindow;
 
-    // === Core Game References ===
+    private final GamingWindow gamingWindow;
     private final Ghost ghost;
     private final BlockType[][] map;
     private final JLabel ghostLabel;
-    private final Pacman pacman;
     private final Logic logic;
 
-    // === Control Flags ===
     private volatile boolean running = true;
     private volatile boolean paused = false;
 
-    // === Constructor ===
-    public GhostLoop(Ghost ghost, BlockType[][] map, JLabel ghostLabel, Pacman pacman, Logic logic, GamingWindow gamingWindow) {
+    public GhostLoop(Ghost ghost, BlockType[][] map, JLabel ghostLabel, Logic logic, GamingWindow gamingWindow) {
         this.ghost = ghost;
         this.map = map;
         this.ghostLabel = ghostLabel;
-        this.pacman = pacman;
         this.logic = logic;
         this.gamingWindow = gamingWindow;
     }
 
-    // === Main Loop ===
     @Override
     public void run() {
-        startUpgradeThread();
+        startUpgradeSpawner();
 
         while (running) {
             if (paused) {
@@ -50,12 +37,9 @@ public class GhostLoop extends Thread {
                 continue;
             }
 
-            // Move the ghost
             ghost.stepMove(map);
-
             logic.checkGhostCollision(ghost, gamingWindow);
 
-            // Update UI
             SwingUtilities.invokeLater(() ->
                     ghostLabel.setLocation(ghost.getX(), ghost.getY())
             );
@@ -64,42 +48,30 @@ public class GhostLoop extends Thread {
         }
     }
 
-
-    private void startUpgradeThread() {
+    private void startUpgradeSpawner() {
         new Thread(() -> {
             while (running) {
-                try {
-                    Thread.sleep(5000); // wait 5 seconds
-                } catch (InterruptedException ignored) {}
+                sleepSafely(5000);
 
-                if (paused) continue;
-
-                // ⛔ Don't spawn if any upgrade is active
-                if (logic.isSpeedEffectActive() || logic.isProtectionEffectActive()) {
-                    continue; // ✅ skip this round
-                }
+                if (paused || logic.isSpeedEffectActive() || logic.isProtectionEffectActive()) continue;
 
                 if (Math.random() < 0.25) {
                     int row = ghost.getRow();
                     int col = ghost.getCol();
                     BlockType current = map[row][col];
 
-                    synchronized (logic) { // 🔒 thread-safe check
-                        boolean validSpot = (current == BlockType.EMPTY || current == BlockType.FOOD)
-                                && !logic.hasUpgradeAt(col, row);
+                    synchronized (logic) {
+                        boolean validSpot = (current == BlockType.EMPTY || current == BlockType.FOOD) && !logic.hasUpgradeAt(col, row);
 
                         if (validSpot) {
                             double chance = Math.random();
 
                             if (chance < 0.33 && !logic.hasUncollectedUpgradeOfType(SpeedUpgrade.class)) {
                                 logic.getUpgrades().add(new SpeedUpgrade(col, row));
-                                System.out.println("💎 Dropped SpeedUpgrade at: " + col + "," + row);
                             } else if (chance < 0.66 && !logic.hasUncollectedUpgradeOfType(ExtraLifeUpgrade.class)) {
                                 logic.getUpgrades().add(new ExtraLifeUpgrade(col, row));
-                                System.out.println("❤️ Dropped ExtraLifeUpgrade at: " + col + "," + row);
                             } else if (!logic.hasUncollectedUpgradeOfType(ProtectionUpgrade.class)) {
                                 logic.getUpgrades().add(new ProtectionUpgrade(col, row));
-                                System.out.println("🛡️ Dropped ProtectionUpgrade at: " + col + "," + row);
                             }
                         }
                     }
@@ -108,10 +80,6 @@ public class GhostLoop extends Thread {
         }).start();
     }
 
-
-
-
-    // === External Control Methods ===
     public void stopLoop() {
         running = false;
     }
@@ -124,10 +92,10 @@ public class GhostLoop extends Thread {
         paused = false;
     }
 
-    // === Utility ===
     private void sleepSafely(int millis) {
         try {
             Thread.sleep(millis);
-        } catch (InterruptedException ignored) {}
+        } catch (InterruptedException ignored) {
+        }
     }
 }

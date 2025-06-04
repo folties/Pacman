@@ -6,58 +6,41 @@ import model.entities.Pacman;
 import model.map.BlockType;
 import model.map.MapDesign;
 import model.map.MapType;
-import model.upgrades.ExtraLifeUpgrade;
-import model.upgrades.ProtectionUpgrade;
-import model.upgrades.SpeedUpgrade;
-import model.upgrades.Upgrade;
+import model.upgrades.*;
 import util.Resources;
-
 import java.awt.*;
 import java.util.ArrayList;
 import java.util.List;
 
-/**
- * Logic handles core game logic such as initializing map elements,
- * controlling Pacman's movement, and resetting ghost states.
- */
 public class Logic {
 
-    // === Map and Entities ===
+
     private final BlockType[][] logicMap;
-    private Pacman pacman;
     private final List<Ghost> ghosts = new ArrayList<>();
+    private final List<Upgrade> upgrades = new ArrayList<>();
     private final String[] originalMapLayout;
 
-    // === Portals ===
+    private Pacman pacman;
     private Point leftPortalPos;
     private Point rightPortalPos;
 
-    private final List<Upgrade> upgrades = new ArrayList<>();
     private boolean speedEffectActive = false;
     private boolean protectionEffectActive = false;
 
-
-
-    // === Constructor ===
     public Logic(int rows, int cols) {
         MapType mapType = determineMapType(rows, cols);
-        String[] currentBlockMap = Resources.loadMapType(mapType);
-        this.originalMapLayout = currentBlockMap;
-        logicMap = MapDesign.loadLogicMap(currentBlockMap);
+        this.originalMapLayout = Resources.loadMapType(mapType);
+        this.logicMap = MapDesign.loadLogicMap(originalMapLayout);
 
-        initializePacmanAndPortals(currentBlockMap);
-        initializeGhosts(currentBlockMap);
+        initializePacmanAndPortals(originalMapLayout);
+        initializeGhosts(originalMapLayout);
 
-        // Assign portal positions to Pacman
         if (pacman != null) {
-            pacman.setLogic(this); // ✅ Set the reference for upgrades
+            pacman.setLogic(this);
             pacman.setPortalPositions(leftPortalPos, rightPortalPos);
         }
     }
 
-    // === Public Methods ===
-
-    /** Updates game state each frame (Pacman only; ghosts handled separately). */
     public void update(GamingWindow window) {
         pacman.stepMove(logicMap);
 
@@ -73,18 +56,7 @@ public class Logic {
         }
     }
 
-    public boolean hasUncollectedUpgradeOfType(Class<? extends Upgrade> type) {
-        for (Upgrade upgrade : upgrades) {
-            if (!upgrade.isCollected() && type.isInstance(upgrade)) {
-                return true;
-            }
-        }
-        return false;
-    }
-
-
     public void startNextLevel() {
-        // Refill all FOOD blocks
         for (int r = 0; r < logicMap.length; r++) {
             for (int c = 0; c < logicMap[0].length; c++) {
                 if (originalMapLayout[r].charAt(c) == ' ') {
@@ -93,31 +65,18 @@ public class Logic {
             }
         }
 
-
-        // Reset Pacman and Ghosts
         pacman.resetPosition();
         pacman.setDirection(pacman.getDirection());
+
         for (Ghost ghost : ghosts) {
             ghost.resetPosition();
             ghost.levelUpSpeed();
         }
+
         upgrades.clear();
     }
 
-    public void setSpeedEffectActive(boolean active) {
-        this.speedEffectActive = active;
-    }
-
-    public void setProtectionEffectActive(boolean active) {
-        this.protectionEffectActive = active;
-    }
-
-
-
-
     public void checkGhostCollision(Ghost ghost, GamingWindow window) {
-        Pacman pacman = getPacman();
-
         if (pacman.isProtected()) return;
 
         Rectangle ghostRect = new Rectangle(ghost.getX(), ghost.getY(), 45, 45);
@@ -137,14 +96,11 @@ public class Logic {
     public boolean isAllFoodEaten() {
         for (BlockType[] row : logicMap) {
             for (BlockType cell : row) {
-                if (cell == BlockType.FOOD) {
-                    return false;
-                }
+                if (cell == BlockType.FOOD) return false;
             }
         }
         return true;
     }
-
 
     public void resetAllGhosts() {
         for (Ghost ghost : ghosts) {
@@ -153,16 +109,39 @@ public class Logic {
     }
 
     public boolean hasUpgradeAt(int col, int row) {
-        for (Upgrade u : upgrades) {
-            if (!u.isCollected() && u.getX() == col && u.getY() == row) {
+        for (Upgrade upgrade : upgrades) {
+            if (!upgrade.isCollected() && upgrade.getX() == col && upgrade.getY() == row) {
                 return true;
             }
         }
         return false;
     }
 
+    public boolean hasUncollectedUpgradeOfType(Class<? extends Upgrade> type) {
+        for (Upgrade upgrade : upgrades) {
+            if (!upgrade.isCollected() && type.isInstance(upgrade)) {
+                return true;
+            }
+        }
+        return false;
+    }
 
-    // === Getters ===
+    public boolean isSpeedEffectActive() {
+        return speedEffectActive;
+    }
+
+    public boolean isProtectionEffectActive() {
+        return protectionEffectActive;
+    }
+
+    public void setSpeedEffectActive(boolean active) {
+        this.speedEffectActive = active;
+    }
+
+    public void setProtectionEffectActive(boolean active) {
+        this.protectionEffectActive = active;
+    }
+
     public Pacman getPacman() {
         return pacman;
     }
@@ -173,6 +152,10 @@ public class Logic {
 
     public List<Ghost> getGhosts() {
         return ghosts;
+    }
+
+    public List<Upgrade> getUpgrades() {
+        return upgrades;
     }
 
     public Point getLeftPortalPos() {
@@ -186,21 +169,6 @@ public class Logic {
     public int getScore() {
         return pacman.getScore();
     }
-
-    public List<Upgrade> getUpgrades() {
-        return upgrades;
-    }
-    public boolean isSpeedEffectActive() {
-        return speedEffectActive;
-    }
-
-    public boolean isProtectionEffectActive() {
-        return protectionEffectActive;
-    }
-
-
-
-    // === Private Initialization ===
 
     private MapType determineMapType(int rows, int cols) {
         return (rows == 17 && cols == 15) ? MapType.SMALL :
@@ -224,21 +192,28 @@ public class Logic {
     private void initializeGhosts(String[] map) {
         for (int r = 0; r < map.length; r++) {
             for (int c = 0; c < map[r].length(); c++) {
-                char cell = map[r].charAt(c);
                 Ghost ghost = null;
-                if (cell == 'r') {
-                    ghost = new Ghost(r, c);
-                    ghost.setAnimationFrames(Resources.redGhostFrames);
-                } else if (cell == 'p') {
-                    ghost = new Ghost(r, c);
-                    ghost.setAnimationFrames(Resources.pinkGhostFrames);
-                } else if (cell == 'o') {
-                    ghost = new Ghost(r, c);
-                    ghost.setAnimationFrames(Resources.orangeGhostFrames);
-                } else if (cell == 'b') {
-                    ghost = new Ghost(r, c);
-                    ghost.setAnimationFrames(Resources.blueGhostFrames);
+                char cell = map[r].charAt(c);
+
+                switch (cell) {
+                    case 'r' -> {
+                        ghost = new Ghost(r, c);
+                        ghost.setAnimationFrames(Resources.redGhostFrames);
+                    }
+                    case 'p' -> {
+                        ghost = new Ghost(r, c);
+                        ghost.setAnimationFrames(Resources.pinkGhostFrames);
+                    }
+                    case 'o' -> {
+                        ghost = new Ghost(r, c);
+                        ghost.setAnimationFrames(Resources.orangeGhostFrames);
+                    }
+                    case 'b' -> {
+                        ghost = new Ghost(r, c);
+                        ghost.setAnimationFrames(Resources.blueGhostFrames);
+                    }
                 }
+
                 if (ghost != null) {
                     ghost.setPortalPositions(leftPortalPos, rightPortalPos);
                     ghosts.add(ghost);
@@ -247,5 +222,3 @@ public class Logic {
         }
     }
 }
-
-

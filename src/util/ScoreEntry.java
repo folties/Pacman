@@ -3,9 +3,10 @@ package util;
 import java.io.Serializable;
 
 public class ScoreEntry implements Serializable {
+
     private final String name;
     private final int score;
-    private final int time;
+    private final int time; // in seconds
 
     public ScoreEntry(String name, int score, int time) {
         this.name = name;

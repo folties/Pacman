@@ -7,6 +7,7 @@ import java.awt.event.KeyAdapter;
 import java.awt.event.KeyEvent;
 
 public class PacmanKeyController extends KeyAdapter {
+
     private final Pacman pacman;
 
     public PacmanKeyController(Pacman pacman) {

@@ -7,10 +7,16 @@ import javax.swing.*;
 import javax.swing.border.LineBorder;
 import java.awt.*;
 
+/**
+ * GameMenu is the main entry screen shown when the app starts.
+ * Provides options to start a new game, view high scores, or exit.
+ */
 public class GameMenu extends JPanel {
-    private Image backgroundImage;
+
+    private final Image backgroundImage;
+
     public GameMenu(MainWindow mainWindow) {
-        backgroundImage = Resources.menuBackgroundImage;
+        this.backgroundImage = Resources.menuBackgroundImage;
         setLayout(new BoxLayout(this, BoxLayout.Y_AXIS));
 
         JButton newGameButton = createMenuButton("New Game");
@@ -29,6 +35,7 @@ public class GameMenu extends JPanel {
         exitButton.addActionListener(e -> System.exit(0));
     }
 
+    @Override
     protected void paintComponent(Graphics g) {
         super.paintComponent(g);
         g.drawImage(backgroundImage, 0, 0, getWidth(), getHeight(), this);
@@ -38,9 +45,9 @@ public class GameMenu extends JPanel {
         JButton button = new JButton(text);
         button.setFont(new Font("Rockwell", Font.BOLD, 30));
         button.setAlignmentX(Component.CENTER_ALIGNMENT);
-        button.setBackground(Color.black);
-        button.setBorder(new LineBorder(new Color(200,100,10), 1));
-        button.setForeground(new Color(200,100,10));
+        button.setBackground(Color.BLACK);
+        button.setForeground(new Color(200, 100, 10));
+        button.setBorder(new LineBorder(new Color(200, 100, 10), 1));
         button.setMaximumSize(new Dimension(300, 60));
         button.setFocusPainted(false);
 
@@ -52,9 +59,10 @@ public class GameMenu extends JPanel {
 
             @Override
             public void mouseExited(java.awt.event.MouseEvent evt) {
-                button.setBackground(Color.black);
+                button.setBackground(Color.BLACK);
             }
         });
+
         return button;
     }
 }

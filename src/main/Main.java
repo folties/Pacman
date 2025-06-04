@@ -1,7 +1,6 @@
 package main;
 
 import util.Resources;
-
 import javax.swing.*;
 
 public class Main {
@@ -10,7 +9,3 @@ public class Main {
         SwingUtilities.invokeLater(MainWindow::new);
     }
 }
-
-//TODO: after new level upgrades disapear
-//TODO: upgrades onlu for 15 seconds
-

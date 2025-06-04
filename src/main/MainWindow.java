@@ -2,42 +2,34 @@ package main;
 
 import gui.*;
 import model.map.MapType;
-
 import javax.swing.*;
 import java.awt.*;
 
+
 public class MainWindow extends JFrame {
-    private CardLayout cardLayout;
-    private JPanel cardPanel;
+
+    private final CardLayout cardLayout;
+    private final JPanel cardPanel;
 
     public MainWindow() {
-        this.setTitle("Pacman");
-        this.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
-        this.setPreferredSize(Toolkit.getDefaultToolkit().getScreenSize());
-        this.pack();
-        this.setLocationRelativeTo(null);
-        this.setResizable(false);
+        setTitle("Pacman");
+        setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
+        setPreferredSize(Toolkit.getDefaultToolkit().getScreenSize());
+        setResizable(false);
 
         cardLayout = new CardLayout();
         cardPanel = new JPanel(cardLayout);
 
         showGameMenu();
 
-        this.setContentPane(cardPanel);
-        this.setVisible(true);
-
+        setContentPane(cardPanel);
+        pack();
+        setLocationRelativeTo(null);
+        setVisible(true);
     }
 
     public void showGameMenu() {
-        // ✅ Always clean old game first
-        for (Component comp : cardPanel.getComponents()) {
-            if (comp instanceof GamingWindow gw) {
-                gw.stopAllLoops();
-                cardPanel.remove(gw);
-                break;
-            }
-        }
-
+        removeOldGameIfPresent();
         GameMenu menuPanel = new GameMenu(this);
         cardPanel.add(menuPanel, "game_menu");
         cardLayout.show(cardPanel, "game_menu");
@@ -45,15 +37,7 @@ public class MainWindow extends JFrame {
     }
 
     public void showBoardOption() {
-        // ✅ Always clean old game first
-        for (Component comp : cardPanel.getComponents()) {
-            if (comp instanceof GamingWindow gw) {
-                gw.stopAllLoops();
-                cardPanel.remove(gw);
-                break;
-            }
-        }
-
+        removeOldGameIfPresent();
         BoardOption optionPanel = new BoardOption(this);
         cardPanel.add(optionPanel, "options");
         cardLayout.show(cardPanel, "options");
@@ -61,15 +45,7 @@ public class MainWindow extends JFrame {
     }
 
     public void showGame(MapType mapType) {
-        // ✅ Always clean old game first
-        for (Component comp : cardPanel.getComponents()) {
-            if (comp instanceof GamingWindow gw) {
-                gw.stopAllLoops();
-                cardPanel.remove(gw);
-                break;
-            }
-        }
-
+        removeOldGameIfPresent();
         GamingWindow game = new GamingWindow(this, mapType);
         cardPanel.add(game, "game");
         cardLayout.show(cardPanel, "game");
@@ -82,6 +58,7 @@ public class MainWindow extends JFrame {
         cardLayout.show(cardPanel, "game_end");
         pack();
     }
+
     public void showHighScores() {
         HighScoresPanel panel = new HighScoresPanel(this);
         cardPanel.add(panel, "highscores");
@@ -89,4 +66,12 @@ public class MainWindow extends JFrame {
         pack();
     }
 
+    private void removeOldGameIfPresent() {
+        for (Component comp : cardPanel.getComponents()) {
+            if (comp instanceof GamingWindow gw) {
+                gw.stopAllLoops();
+                cardPanel.remove(gw);
+            }
+        }
+    }
 }

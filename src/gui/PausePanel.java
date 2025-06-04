@@ -1,17 +1,19 @@
 package gui;
 
 import util.Resources;
-
 import javax.swing.*;
 import javax.swing.border.LineBorder;
 import java.awt.*;
 
 public class PausePanel extends JPanel {
-    private Image backgroundImage;
+
+    private final Image backgroundImage;
+
     public PausePanel(Runnable onContinue, Runnable onQuit) {
-        backgroundImage = Resources.pauseBackgroundImage;
+        this.backgroundImage = Resources.pauseBackgroundImage;
+
         setLayout(new BoxLayout(this, BoxLayout.Y_AXIS));
-        setOpaque(false); // let paintComponent show through
+        setOpaque(false);
         setBackground(Color.BLACK);
 
         JLabel title = new JLabel("PAUSED");
@@ -37,9 +39,9 @@ public class PausePanel extends JPanel {
         JButton button = new JButton(text);
         button.setFont(new Font("Rockwell", Font.BOLD, 30));
         button.setAlignmentX(Component.CENTER_ALIGNMENT);
-        button.setBackground(Color.black);
-        button.setBorder(new LineBorder(new Color(200,100,10), 1));
-        button.setForeground(new Color(200,100,10));
+        button.setBackground(Color.BLACK);
+        button.setForeground(new Color(200, 100, 10));
+        button.setBorder(new LineBorder(new Color(200, 100, 10), 1));
         button.setMaximumSize(new Dimension(300, 60));
         button.setFocusPainted(false);
 
@@ -51,16 +53,17 @@ public class PausePanel extends JPanel {
 
             @Override
             public void mouseExited(java.awt.event.MouseEvent evt) {
-                button.setBackground(Color.black);
+                button.setBackground(Color.BLACK);
             }
         });
 
         return button;
     }
+
     @Override
     protected void paintComponent(Graphics g) {
         super.paintComponent(g);
-        if (Resources.pauseBackgroundImage != null) {
+        if (backgroundImage != null) {
             g.drawImage(backgroundImage, 0, 0, getWidth(), getHeight(), this);
         }
     }

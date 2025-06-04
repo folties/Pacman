@@ -3,31 +3,24 @@ package animation;
 import javax.swing.*;
 import java.awt.*;
 
-public class PortalAnimation extends Thread {
-    private final JLabel label;
+public class PortalAnimation extends AbstractAnimation {
     private final Image[] frames;
-    private int index = 0;
-    private boolean running = true;
 
     public PortalAnimation(JLabel label, Image[] frames) {
-        this.label = label;
+        super(label);
         this.frames = frames;
     }
 
-    public void stopAnimation() {
-        running = false;
+    @Override
+    protected void updateSprite() {
+        SwingUtilities.invokeLater(() ->
+                label.setIcon(new ImageIcon(frames[frameIndex]))
+        );
+        frameIndex = (frameIndex + 1) % frames.length;
     }
 
     @Override
-    public void run() {
-        while (running) {
-            SwingUtilities.invokeLater(() ->
-                    label.setIcon(new ImageIcon(frames[index]))
-            );
-            index = (index + 1) % frames.length;
-            try {
-                Thread.sleep(150);
-            } catch (InterruptedException ignored) {}
-        }
+    protected int getFrameDelay() {
+        return 150;
     }
 }

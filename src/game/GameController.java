@@ -3,6 +3,7 @@ package game;
 import java.util.List;
 
 public class GameController {
+
     private final PacmanLoop gameLoop;
     private final TimerLoop timerLoop;
     private final List<GhostLoop> ghostLoops;

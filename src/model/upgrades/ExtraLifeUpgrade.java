@@ -12,11 +12,10 @@ public class ExtraLifeUpgrade extends Upgrade {
         if (pacman.getLives() < 3) {
             pacman.gainLife();
         }
-        setCollected(true); // mark as collected
+        setCollected(true);
     }
 
     @Override
     protected void revertEffect(Pacman pacman) {
-        // No revert needed for life gain
     }
 }

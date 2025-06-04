@@ -3,8 +3,6 @@ package gui;
 import main.MainWindow;
 import util.ScoreEntry;
 import util.ScoreSaver;
-
-
 import javax.swing.*;
 import javax.swing.border.LineBorder;
 import javax.swing.border.TitledBorder;
@@ -12,8 +10,8 @@ import java.awt.*;
 import java.util.ArrayList;
 import java.util.List;
 
-
 public class HighScoresPanel extends JPanel {
+
     private final MainWindow mainWindow;
 
     public HighScoresPanel(MainWindow mainWindow) {
@@ -21,75 +19,94 @@ public class HighScoresPanel extends JPanel {
         setLayout(new BorderLayout());
         setBackground(Color.BLACK);
 
-        JTextArea scoreArea = new JTextArea();
-        scoreArea.setEditable(false);
-        scoreArea.setFont(new Font("Rockwell", Font.PLAIN, 25));
-        scoreArea.setBackground(Color.BLACK);
-        scoreArea.setForeground(Color.WHITE);
+        JTextArea scoreArea = createScoreArea();
+        JScrollPane scrollPane = createScrollPane(scoreArea);
 
-        JScrollPane scrollPane = new JScrollPane(scoreArea);
+        populateScores(scoreArea);
+
+        JButton backButton = createBackButton();
+        JPanel buttonPanel = new JPanel();
+        buttonPanel.setBackground(Color.BLACK);
+        buttonPanel.add(backButton);
+
+        add(scrollPane, BorderLayout.CENTER);
+        add(buttonPanel, BorderLayout.SOUTH);
+    }
+
+
+    private JTextArea createScoreArea() {
+        JTextArea area = new JTextArea();
+        area.setEditable(false);
+        area.setFont(new Font("Rockwell", Font.PLAIN, 25));
+        area.setBackground(Color.BLACK);
+        area.setForeground(Color.WHITE);
+        return area;
+    }
+
+    private JScrollPane createScrollPane(JTextArea area) {
+        JScrollPane scrollPane = new JScrollPane(area);
         TitledBorder border = BorderFactory.createTitledBorder("High Scores");
-        border.setTitleColor(new Color(220, 120, 20)); // change color
+        border.setTitleColor(new Color(220, 120, 20));
+        border.setTitleFont(new Font("Rockwell", Font.BOLD, 50));
         border.setTitleJustification(TitledBorder.CENTER);
-        border.setTitleFont(new Font("Rockwell", Font.BOLD, 50)); // change font and size
 
         scrollPane.setBorder(border);
         scrollPane.setBackground(Color.BLACK);
+        return scrollPane;
+    }
 
+    private void populateScores(JTextArea area) {
         List<String> lines = ScoreSaver.loadScoresText();
         List<ScoreEntry> entries = new ArrayList<>();
 
         for (String line : lines) {
             String[] parts = line.split(",");
             if (parts.length == 3) {
-                String name = parts[0];
-                int score = Integer.parseInt(parts[1]);
-                int time = Integer.parseInt(parts[2]);
-                entries.add(new ScoreEntry(name, score, time));
+                try {
+                    String name = parts[0];
+                    int score = Integer.parseInt(parts[1]);
+                    int time = Integer.parseInt(parts[2]);
+                    entries.add(new ScoreEntry(name, score, time));
+                } catch (NumberFormatException ignored) {}
             }
         }
 
-        entries.sort((a, b) -> Integer.compare(b.getScore(), a.getScore())); // descending by score
+        entries.sort((a, b) -> Integer.compare(b.getScore(), a.getScore())); // Highest first
 
         if (entries.isEmpty()) {
-            scoreArea.setText("No scores yet.");
+            area.setText("No scores yet.");
         } else {
             for (ScoreEntry entry : entries) {
-                String formattedTime = String.format("%02d:%02d", entry.getTime() / 60, entry.getTime() % 60);
-                scoreArea.append(entry.getName() + " — Score: " + entry.getScore() + " — Time: " + formattedTime + "\n");
+                String timeStr = String.format("%02d:%02d", entry.getTime() / 60, entry.getTime() % 60);
+                area.append(entry.getName() + " — Score: " + entry.getScore() + " — Time: " + timeStr + "\n");
             }
         }
+    }
 
+    private JButton createBackButton() {
+        JButton button = new JButton("Back to Menu");
+        button.setFont(new Font("Rockwell", Font.BOLD, 30));
+        button.setPreferredSize(new Dimension(Integer.MAX_VALUE, 50));
+        button.setAlignmentX(Component.CENTER_ALIGNMENT);
+        button.setBackground(Color.BLACK);
+        button.setForeground(new Color(200, 100, 10));
+        button.setBorder(new LineBorder(new Color(200, 100, 10), 2));
+        button.setFocusPainted(false);
 
-        add(scrollPane, BorderLayout.CENTER);
+        button.addActionListener(e -> mainWindow.showGameMenu());
 
-        JButton backButton = new JButton("Back to Menu");
-        backButton.setFont(new Font("Rockwell", Font.BOLD, 30));
-        backButton.addActionListener(e -> mainWindow.showGameMenu());
-        backButton.setAlignmentX(Component.CENTER_ALIGNMENT);
-        backButton.setBackground(Color.black);
-        backButton.setBorder(new LineBorder(new Color(200,100,10), 2));
-        backButton.setForeground(new Color(200,100,10));
-        backButton.setPreferredSize(new Dimension(Integer.MAX_VALUE, 50)); // Optional height
-        backButton.setFocusPainted(false);
-
-        backButton.addMouseListener(new java.awt.event.MouseAdapter() {
+        button.addMouseListener(new java.awt.event.MouseAdapter() {
             @Override
             public void mouseEntered(java.awt.event.MouseEvent evt) {
-                backButton.setBackground(new Color(100, 0, 0));
+                button.setBackground(new Color(100, 0, 0));
             }
 
             @Override
             public void mouseExited(java.awt.event.MouseEvent evt) {
-                backButton.setBackground(Color.black);
+                button.setBackground(Color.BLACK);
             }
         });
 
-        JPanel buttonPanel = new JPanel();
-        buttonPanel.setBackground(Color.BLACK);
-        buttonPanel.add(backButton);
-
-        add(buttonPanel, BorderLayout.SOUTH);
+        return button;
     }
 }
-
