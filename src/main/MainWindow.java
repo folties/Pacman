@@ -29,7 +29,6 @@ public class MainWindow extends JFrame {
     }
 
     public void showGameMenu() {
-        removeOldGameIfPresent();
         GameMenu menuPanel = new GameMenu(this);
         cardPanel.add(menuPanel, "game_menu");
         cardLayout.show(cardPanel, "game_menu");
@@ -37,7 +36,6 @@ public class MainWindow extends JFrame {
     }
 
     public void showBoardOption() {
-        removeOldGameIfPresent();
         BoardOption optionPanel = new BoardOption(this);
         cardPanel.add(optionPanel, "options");
         cardLayout.show(cardPanel, "options");
@@ -45,7 +43,12 @@ public class MainWindow extends JFrame {
     }
 
     public void showGame(MapType mapType) {
-        removeOldGameIfPresent();
+        for (Component comp : cardPanel.getComponents()) {
+            if (comp instanceof GamingWindow gw) {
+                gw.stopAllLoops();
+                cardPanel.remove(gw);
+            }
+        }
         GamingWindow game = new GamingWindow(this, mapType);
         cardPanel.add(game, "game");
         cardLayout.show(cardPanel, "game");
@@ -61,17 +64,8 @@ public class MainWindow extends JFrame {
 
     public void showHighScores() {
         HighScoresPanel panel = new HighScoresPanel(this);
-        cardPanel.add(panel, "highscores");
-        cardLayout.show(cardPanel, "highscores");
+        cardPanel.add(panel, "high_scores");
+        cardLayout.show(cardPanel, "high_scores");
         pack();
-    }
-
-    private void removeOldGameIfPresent() {
-        for (Component comp : cardPanel.getComponents()) {
-            if (comp instanceof GamingWindow gw) {
-                gw.stopAllLoops();
-                cardPanel.remove(gw);
-            }
-        }
     }
 }

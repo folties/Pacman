@@ -42,10 +42,10 @@ public class Resources {
 
 
     public static void loadResources() {
-        menuBackgroundImage = loadImage("materials/menuBackground.png");
-        optionBackgroundImage = loadImage("materials/optionBackground.png");
-        pauseBackgroundImage = loadImage("materials/pauseBackground.png");
-        endBackgroundImage = loadImage("materials/endBackground.png");
+        menuBackgroundImage = loadImage("materials/backgrounds/menuBackground.png");
+        optionBackgroundImage = loadImage("materials/backgrounds/optionBackground.png");
+        pauseBackgroundImage = loadImage("materials/backgrounds/pauseBackground.png");
+        endBackgroundImage = loadImage("materials/backgrounds/endBackground.png");
         wallImage = loadImage("materials/stone.png");
         foodImage = loadImage("materials/food.png");
         heartIcon = loadImageIcon("materials/heart.png");
@@ -222,11 +222,11 @@ public class Resources {
     public static String[] loadMapFromFile(String filePath) {
         List<String> lines = new ArrayList<>();
 
-        try (InputStream in = MapDesign.class.getClassLoader().getResourceAsStream(filePath)) {
-            if (in == null) {
+        try (InputStream input = MapDesign.class.getClassLoader().getResourceAsStream(filePath)) {
+            if (input == null) {
                 throw new RuntimeException("can't find map file: " + filePath);
             }
-            BufferedReader reader = new BufferedReader(new InputStreamReader(in));
+            BufferedReader reader = new BufferedReader(new InputStreamReader(input));
             String line;
             while ((line = reader.readLine()) != null) {
                 lines.add(line);

@@ -2,7 +2,6 @@ package controller;
 
 import model.entities.Pacman;
 import util.Direction;
-
 import java.awt.event.KeyAdapter;
 import java.awt.event.KeyEvent;
 

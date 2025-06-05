@@ -8,7 +8,6 @@ import model.map.MapDesign;
 import model.map.MapType;
 import model.upgrades.*;
 import util.Resources;
-
 import java.awt.*;
 import java.util.ArrayList;
 import java.util.List;
@@ -46,7 +45,7 @@ public class Logic {
 
         if (isAllFoodEaten()) {
             startNextLevel();
-            window.showCountdownThenResume();
+            window.showCountdown();
         }
 
         for (Upgrade upgrade : upgrades) {
@@ -125,12 +124,13 @@ public class Logic {
         Rectangle pacmanRect = new Rectangle(pacman.getX(), pacman.getY(), 45, 45);
 
         if (ghostRect.intersects(pacmanRect)) {
+            window.updateHeartsUI();
             pacman.loseLife();
             pacman.resetPosition();
             resetAllGhosts();
 
             if (pacman.getLives() > 0) {
-                window.showCountdownThenResume();
+                window.showCountdown();
             }
         }
     }

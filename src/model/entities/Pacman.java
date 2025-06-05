@@ -12,8 +12,6 @@ public class Pacman extends Entity implements Walkable {
     private static final float step = 0.1f;
     private static final int blockSize = Resources.BLOCK_SIZE;
 
-    private float x;
-    private float y;
     private int lives = 3;
     private int score = 0;
 
@@ -28,7 +26,7 @@ public class Pacman extends Entity implements Walkable {
     private Logic logic;
 
     public Pacman(int row, int col) {
-        super(row, col, Direction.LEFT, 3f); // Default speed = 3
+        super(row, col, Direction.LEFT, 3.f);
         this.startRow = row;
         this.startCol = col;
         this.nextDirection = Direction.LEFT;
@@ -123,7 +121,9 @@ public class Pacman extends Entity implements Walkable {
     }
 
     public void gainLife() {
-        if (lives < 3) lives++;
+        if (lives < 3) {
+            lives++;
+        }
     }
 
     public void resetPosition() {
@@ -155,19 +155,6 @@ public class Pacman extends Entity implements Walkable {
         this.logic = logic;
     }
 
-    @Override
-    public int getX() { return Math.round(x); }
-    @Override
-    public int getY() { return Math.round(y); }
-    @Override
-    public int getRow() { return row; }
-    @Override
-    public int getCol() { return col; }
-    @Override
-    public Direction getDirection() { return direction; }
-    @Override
-    public void setDirection(Direction direction) { this.nextDirection = direction; }
-
     public int getLives() { return lives; }
     public int getScore() { return score; }
     public float getSpeed() { return speed; }
@@ -177,4 +164,7 @@ public class Pacman extends Entity implements Walkable {
     public Map<Direction, Image[]> getFrames() { return frames; }
     public void setFrames(Map<Direction, Image[]> frames) { this.frames = frames; }
     public Logic getLogic() { return logic; }
+
+    @Override
+    public void setDirection(Direction direction) { this.nextDirection = direction; }
 }

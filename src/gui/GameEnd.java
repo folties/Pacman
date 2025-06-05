@@ -22,9 +22,9 @@ public class GameEnd extends JPanel {
         setLayout(new BorderLayout());
 
         JLabel gameOverLabel = createLabel("Game Over", new Font("Rockwell", Font.BOLD, 100), new Color(100, 0, 0));
-        JLabel scoreLabel = createLabel("Score: " + finalScore, new Font("Rockwell", Font.PLAIN, 30), new Color(150, 150, 150));
-        JLabel timeLabel = createLabel("Time: " + String.format("%02d:%02d", finalSeconds / 60, finalSeconds % 60), new Font("Rockwell", Font.PLAIN, 30), new Color(150, 150, 150));
-        JLabel nameLabel = createLabel("Label your game:", new Font("Rockwell", Font.PLAIN, 30), new Color(150, 150, 150));
+        JLabel scoreLabel = createLabel("Score: " + finalScore, new Font("Rockwell", Font.BOLD, 30), new Color(150, 150, 150));
+        JLabel timeLabel = createLabel("Time: " + String.format("%02d:%02d", finalSeconds / 60, finalSeconds % 60), new Font("Rockwell", Font.BOLD, 30), new Color(150, 150, 150));
+        JLabel nameLabel = createLabel("Label your game:", new Font("Rockwell", Font.BOLD, 30), new Color(150, 150, 150));
 
         JTextField nameField = createNameField();
         JButton saveButton = createSaveButton(nameField, finalScore, finalSeconds);

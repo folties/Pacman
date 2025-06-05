@@ -2,7 +2,6 @@ package animation;
 
 import model.entities.Ghost;
 import util.Direction;
-
 import javax.swing.*;
 import java.awt.*;
 

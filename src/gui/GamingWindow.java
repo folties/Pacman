@@ -10,7 +10,6 @@ import model.entities.Ghost;
 import model.map.BlockType;
 import model.map.MapType;
 import util.Resources;
-
 import javax.swing.*;
 import javax.swing.border.LineBorder;
 import java.awt.*;
@@ -51,7 +50,8 @@ public class GamingWindow extends JPanel {
         setupUI();
 
         int[] size = getBoardSize(mapType);
-        int rows = size[0], cols = size[1];
+        int rows = size[0];
+        int cols = size[1];
 
         gameLogic = new Logic(rows, cols);
         initController();
@@ -77,7 +77,7 @@ public class GamingWindow extends JPanel {
         topPanel = new JPanel();
         topPanel.setLayout(new BoxLayout(topPanel, BoxLayout.X_AXIS));
         topPanel.setBackground(Color.BLACK);
-        topPanel.setBorder(BorderFactory.createEmptyBorder(10, 20, 10, 20)); // зовнішній відступ
+        topPanel.setBorder(BorderFactory.createEmptyBorder(10, 20, 10, 20));
 
         scoreLabel = new JLabel("Score: 0");
         scoreLabel.setForeground(Color.WHITE);
@@ -110,36 +110,24 @@ public class GamingWindow extends JPanel {
         JPanel gridPanel = buildGridPanel(rows, cols);
         JLayeredPane layeredPane = buildLayeredPane(gridPanel);
 
-        GridBagConstraints gameGbc = new GridBagConstraints();
-        gameGbc.gridx = 0;
-        gameGbc.gridy = 1;
-        add(layeredPane, gameGbc);
+        GridBagConstraints gameConstr = new GridBagConstraints();
+        gameConstr.gridx = 0;
+        gameConstr.gridy = 1;
+        add(layeredPane, gameConstr);
     }
 
     private void initTopPanel() {
         createTopPanel();
 
-        GridBagConstraints topGbc = new GridBagConstraints();
-        topGbc.gridx = 0;
-        topGbc.gridy = 0;
-        topGbc.insets = new Insets(10, 10, 10, 10);
-        add(topPanel, topGbc);
+        GridBagConstraints panelConstr = new GridBagConstraints();
+        panelConstr.gridx = 0;
+        panelConstr.gridy = 0;
+        panelConstr.insets = new Insets(10, 10, 10, 10);
+        add(topPanel, panelConstr);
     }
 
     private void startLoops() {
-        new Thread(() -> {
-            try {
-                SwingUtilities.invokeLater(() -> countdownLabel.setText("3"));
-                Thread.sleep(1000);
-                SwingUtilities.invokeLater(() -> countdownLabel.setText("2"));
-                Thread.sleep(1000);
-                SwingUtilities.invokeLater(() -> countdownLabel.setText("1"));
-                Thread.sleep(1000);
-                SwingUtilities.invokeLater(() -> countdownLabel.setVisible(false));
-            } catch (InterruptedException e) {
-                System.out.println("countdown thread goes wrong: " + e.getMessage());
-            }
-
+        runCountdown(() -> {
             gameLoop = new PacmanLoop(gameLogic, this, () -> {
                 updateGrid();
                 SwingUtilities.invokeLater(() -> {
@@ -147,7 +135,6 @@ public class GamingWindow extends JPanel {
                     updateHeartsUI();
                 });
                 scoreLabel.setText("Score: " + gameLogic.getScore());
-
             });
             gameLoop.start();
 
@@ -159,9 +146,26 @@ public class GamingWindow extends JPanel {
             }
 
             gameController = new GameController(gameLoop, timerLoop, ghostLoops);
-        }).start();
+        });
     }
 
+    private void runCountdown(Runnable afterCountdown) {
+        new Thread(() -> {
+            try {
+                for (int i = 3; i >= 1; i--) {
+                    int count = i;
+                    SwingUtilities.invokeLater(() -> countdownLabel.setText(String.valueOf(count)));
+                    Thread.sleep(1000);
+                }
+                SwingUtilities.invokeLater(() -> {
+                    countdownLabel.setVisible(false);
+                    afterCountdown.run();
+                });
+            } catch (InterruptedException e) {
+                System.out.println("countdown thread error: " + e.getMessage());
+            }
+        }).start();
+    }
 
     private JPanel buildGridPanel(int rows, int cols) {
         JPanel gridPanel = new JPanel(new GridLayout(rows, cols));
@@ -180,33 +184,20 @@ public class GamingWindow extends JPanel {
             }
         }
 
-        GridRender.renderBlockGrid(cells, logicMap, blockSize);
+        GridRender.renderBlockGrid(cells, logicMap);
         return gridPanel;
     }
 
-    public void showCountdownThenResume() {
+    public void showCountdown() {
         paused = true;
         gameController.pauseGame();
 
         resetEntityPositions();
 
-        new Thread(() -> {
-            try {
-                SwingUtilities.invokeLater(() -> countdownLabel.setText("3"));
-                Thread.sleep(1000);
-                SwingUtilities.invokeLater(() -> countdownLabel.setText("2"));
-                Thread.sleep(1000);
-                SwingUtilities.invokeLater(() -> countdownLabel.setText("1"));
-                Thread.sleep(1000);
-                SwingUtilities.invokeLater(() -> {
-                    countdownLabel.setVisible(false);
-                    paused = false;
-                    gameController.resumeGame();
-                });
-            } catch (InterruptedException e) {
-               System.out.println("countdown thread goes wrong " + e.getMessage());
-            }
-        }).start();
+        runCountdown(() -> {
+            paused = false;
+            gameController.resumeGame();
+        });
     }
 
     public void resetEntityPositions() {
@@ -266,7 +257,7 @@ public class GamingWindow extends JPanel {
                 mainWindow.showGameEnd(gameLogic.getScore(), timerLoop.getSeconds()));
     }
 
-    private void updateHeartsUI() {
+    public void updateHeartsUI() {
         int lives = gameLogic.getPacman().getLives();
         for (int i = 0; i < heartLabels.size(); i++) {
             heartLabels.get(i).setVisible(i < lives);
@@ -280,13 +271,7 @@ public class GamingWindow extends JPanel {
 
     private void updateGrid() {
         BlockType[][] logicMap = gameLogic.getLogicMap();
-        for (int r = 0; r < logicMap.length; r++) {
-            for (int c = 0; c < logicMap[0].length; c++) {
-                Image image = Resources.getImageForBlockType(logicMap[r][c]);
-                cells[r][c].setIcon(image != null ? new ImageIcon(image) : null);
-            }
-        }
-
+        GridRender.renderBlockGrid(cells, logicMap);
         UpgradeRender.render(gameLogic.getUpgrades(), cells);
     }
 
@@ -301,36 +286,22 @@ public class GamingWindow extends JPanel {
         gridPanel.setBounds(0, 0, width, height);
         layeredPane.add(gridPanel, Integer.valueOf(0));
 
-        pacmanLabel = new JLabel();
-        pacmanLabel.setBounds(gameLogic.getPacman().getX(), gameLogic.getPacman().getY(), blockSize, blockSize);
-        layeredPane.add(pacmanLabel, Integer.valueOf(1));
-
-        for (Ghost ghost : gameLogic.getGhosts()) {
-            JLabel ghostLabel = new JLabel();
-            ghostLabel.setBounds(ghost.getX(), ghost.getY(), blockSize, blockSize);
-            layeredPane.add(ghostLabel, Integer.valueOf(1));
-
-            GhostLoop loop = new GhostLoop(ghost, gameLogic.getLogicMap(), ghostLabel, gameLogic, this);
-            ghostLoops.add(loop);
-
-            ghostAnimation = new GhostAnimation(ghostLabel, ghost);
-            ghostAnimation.start();
-        }
-
+        pacmanLabel = createEntityLabel(gameLogic.getPacman().getX(), gameLogic.getPacman().getY(), 1, layeredPane);
         pacmanAnimation = new PacmanAnimation(pacmanLabel, gameLogic.getPacman());
         pacmanAnimation.start();
 
-        leftPortalLabel = new JLabel();
+        for (Ghost ghost : gameLogic.getGhosts()) {
+            JLabel ghostLabel = createEntityLabel(ghost.getX(), ghost.getY(), 1, layeredPane);
+            ghostLoops.add(new GhostLoop(ghost, gameLogic.getLogicMap(), ghostLabel, gameLogic, this));
+            new GhostAnimation(ghostLabel, ghost).start();
+        }
+
         Point leftPortal = gameLogic.getLeftPortalPos();
-        leftPortalLabel.setBounds(leftPortal.x * blockSize, leftPortal.y * blockSize, blockSize, blockSize);
-        layeredPane.add(leftPortalLabel, Integer.valueOf(1));
-
-        rightPortalLabel = new JLabel();
-        Point rightPortal = gameLogic.getRightPortalPos();
-        rightPortalLabel.setBounds(rightPortal.x * blockSize, rightPortal.y * blockSize, blockSize, blockSize);
-        layeredPane.add(rightPortalLabel, Integer.valueOf(1));
-
+        leftPortalLabel = createEntityLabel(leftPortal.x * blockSize, leftPortal.y * blockSize, 1, layeredPane);
         new PortalAnimation(leftPortalLabel, Resources.leftPortalFrames).start();
+
+        Point rightPortal = gameLogic.getRightPortalPos();
+        rightPortalLabel = createEntityLabel(rightPortal.x * blockSize, rightPortal.y * blockSize, 1, layeredPane);
         new PortalAnimation(rightPortalLabel, Resources.rightPortalFrames).start();
 
         pausePanel = new PausePanel(this::resumeGame, () -> {
@@ -338,19 +309,28 @@ public class GamingWindow extends JPanel {
             mainWindow.showGameMenu();
         });
         pausePanel.setBounds(0, 0, width, height);
-        pausePanel.setBorder(new LineBorder(new Color(200,100,10), 5));
+        pausePanel.setBorder(new LineBorder(new Color(200, 100, 10), 5));
         pausePanel.setVisible(false);
-        layeredPane.add(pausePanel, Integer.valueOf(5));
+        layeredPane.add(pausePanel, Integer.valueOf(3));
 
         countdownLabel = new JLabel("", SwingConstants.CENTER);
         countdownLabel.setFont(new Font("Jokerman", Font.BOLD, 100));
-        countdownLabel.setForeground(new Color(150,10,10));
+        countdownLabel.setForeground(new Color(150, 10, 10));
         countdownLabel.setBounds(0, height / 2 - 50, width, 100);
         countdownLabel.setVisible(true);
-        layeredPane.add(countdownLabel, Integer.valueOf(6)); // above pausePanel
+        layeredPane.add(countdownLabel, Integer.valueOf(2));
 
         return layeredPane;
     }
+
+
+    private JLabel createEntityLabel(int x, int y, int layer, JLayeredPane pane) {
+        JLabel label = new JLabel();
+        label.setBounds(x, y, blockSize, blockSize);
+        pane.add(label, Integer.valueOf(layer));
+        return label;
+    }
+
 }
 
 

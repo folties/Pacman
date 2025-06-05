@@ -13,7 +13,6 @@ public class Ghost extends Entity implements Walkable {
     private static final int blockSize = Resources.BLOCK_SIZE;
     private static final float step = 0.1f;
     private static final float[] speedLevel = {1.5f, 2.5f, 3.0f, 4.5f, 6.0f, 7.5f, 9.0f, 15.0f, 22.5f};
-
     private int currentSpeedIndex = 0;
 
     private final int startRow, startCol;
@@ -42,22 +41,22 @@ public class Ghost extends Entity implements Walkable {
                 teleportTo(leftPortalPos);
             }
 
-            List<Direction> validDirs = new ArrayList<>();
+            List<Direction> trueDir = new ArrayList<>();
             for (Direction dir : Direction.values()) {
                 if (dir == getOpposite(direction)) continue;
                 int tryRow = row + deltaRow(dir);
                 int tryCol = col + deltaCol(dir);
                 if (isWalkable(logicMap, tryRow, tryCol)) {
-                    validDirs.add(dir);
+                    trueDir.add(dir);
                 }
             }
 
-            boolean atIntersection = validDirs.size() > 1;
+            boolean atIntersection = trueDir.size() > 1;
             boolean blockedAhead = !isWalkable(logicMap, row + deltaRow(direction), col + deltaCol(direction));
 
             if (atIntersection || blockedAhead) {
-                Collections.shuffle(validDirs);
-                direction = validDirs.get(0);
+                Collections.shuffle(trueDir);
+                direction = trueDir.get(0);
             }
         }
 
@@ -143,10 +142,6 @@ public class Ghost extends Entity implements Walkable {
         }
     }
 
-    public void setSpeed(float speed) {
-        this.speed = speed;
-    }
-
     public void setAnimationFrames(Map<Direction, Image[]> frames) {
         this.animationFrames = frames;
     }
@@ -164,12 +159,6 @@ public class Ghost extends Entity implements Walkable {
     public int getX() { return Math.round(x); }
     @Override
     public int getY() { return Math.round(y); }
-    @Override
-    public int getRow() { return row; }
-    @Override
-    public int getCol() { return col; }
-    @Override
-    public Direction getDirection() { return direction; }
     @Override
     public void setDirection(Direction direction) { this.direction = direction; }
 

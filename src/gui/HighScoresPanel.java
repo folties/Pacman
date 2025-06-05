@@ -24,7 +24,7 @@ public class HighScoresPanel extends JPanel {
         JTextArea scoreArea = createScoreArea();
         JScrollPane scrollPane = createScrollPane(scoreArea);
 
-        populateScores(scoreArea);
+        initializeScores(scoreArea);
 
         JButton backButton = createBackButton();
         JPanel buttonPanel = new JPanel();
@@ -57,7 +57,7 @@ public class HighScoresPanel extends JPanel {
         return scrollPane;
     }
 
-    private void populateScores(JTextArea area) {
+    private void initializeScores(JTextArea area) {
         List<String> lines = ScoreSaver.loadScoresText();
         List<ScoreEntry> entries = new ArrayList<>();
 
@@ -69,18 +69,20 @@ public class HighScoresPanel extends JPanel {
                     int score = Integer.parseInt(parts[1]);
                     int time = Integer.parseInt(parts[2]);
                     entries.add(new ScoreEntry(name, score, time));
-                } catch (NumberFormatException ignored) {}
+                } catch (NumberFormatException e) {
+                    System.out.println("can't initialize score: " + e.getMessage());
+                }
             }
         }
 
-        entries.sort((a, b) -> Integer.compare(b.getScore(), a.getScore())); // Highest first
+        entries.sort((a, b) -> Integer.compare(b.getScore(), a.getScore()));
 
         if (entries.isEmpty()) {
-            area.setText("No scores yet.");
+            area.setText("no scores yet");
         } else {
             for (ScoreEntry entry : entries) {
                 String timeStr = String.format("%02d:%02d", entry.getTime() / 60, entry.getTime() % 60);
-                area.append(entry.getName() + " — Score: " + entry.getScore() + " — Time: " + timeStr + "\n");
+                area.append(entry.getName() + " ------- Score: " + entry.getScore() + " ------- Time: " + timeStr + "\n");
             }
         }
     }
@@ -93,14 +95,15 @@ public class HighScoresPanel extends JPanel {
         button.setBackground(Color.BLACK);
         button.setForeground(new Color(200, 100, 10));
         button.setBorder(new LineBorder(new Color(200, 100, 10), 2));
-        button.setFocusPainted(false);
 
         button.addActionListener(e -> mainWindow.showGameMenu());
 
         button.addMouseListener(new MouseAdapter() {
+            @Override
             public void mouseEntered(MouseEvent event) {
                 button.setBackground(new Color(100, 0, 0));
             }
+            @Override
             public void mouseExited(MouseEvent evt) {
                 button.setBackground(Color.BLACK);
             }
