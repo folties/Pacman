@@ -21,10 +21,8 @@ public class HighScoresPanel extends JPanel {
         setLayout(new BorderLayout());
         setBackground(Color.BLACK);
 
-        JTextArea scoreArea = createScoreArea();
-        JScrollPane scrollPane = createScrollPane(scoreArea);
-
-        initializeScores(scoreArea);
+        JList<String> scoreList = createScoreList();
+        JScrollPane scrollPane = createScrollPane(scoreList);
 
         JButton backButton = createBackButton();
         JPanel buttonPanel = new JPanel();
@@ -35,29 +33,8 @@ public class HighScoresPanel extends JPanel {
         add(buttonPanel, BorderLayout.SOUTH);
     }
 
-
-    private JTextArea createScoreArea() {
-        JTextArea area = new JTextArea();
-        area.setEditable(false);
-        area.setFont(new Font("Rockwell", Font.PLAIN, 25));
-        area.setBackground(Color.BLACK);
-        area.setForeground(Color.WHITE);
-        return area;
-    }
-
-    private JScrollPane createScrollPane(JTextArea area) {
-        JScrollPane scrollPane = new JScrollPane(area);
-        TitledBorder border = BorderFactory.createTitledBorder("High Scores");
-        border.setTitleColor(new Color(220, 120, 20));
-        border.setTitleFont(new Font("Rockwell", Font.BOLD, 50));
-        border.setTitleJustification(TitledBorder.CENTER);
-
-        scrollPane.setBorder(border);
-        scrollPane.setBackground(Color.BLACK);
-        return scrollPane;
-    }
-
-    private void initializeScores(JTextArea area) {
+    private JList<String> createScoreList() {
+        DefaultListModel<String> modelList = new DefaultListModel<>();
         List<String> lines = ScoreSaver.loadScoresText();
         List<ScoreEntry> entries = new ArrayList<>();
 
@@ -78,13 +55,35 @@ public class HighScoresPanel extends JPanel {
         entries.sort((a, b) -> Integer.compare(b.getScore(), a.getScore()));
 
         if (entries.isEmpty()) {
-            area.setText("no scores yet");
+            modelList.addElement("No scores yet");
         } else {
             for (ScoreEntry entry : entries) {
                 String timeStr = String.format("%02d:%02d", entry.getTime() / 60, entry.getTime() % 60);
-                area.append(entry.getName() + " ------- Score: " + entry.getScore() + " ------- Time: " + timeStr + "\n");
+                modelList.addElement(entry.getName() + " ------- Score: " + entry.getScore() + " ------- Time: " + timeStr);
             }
         }
+
+        JList<String> list = new JList<>(modelList);
+        list.setFont(new Font("Rockwell", Font.BOLD, 25));
+        list.setBackground(Color.BLACK);
+        list.setForeground(Color.WHITE);
+        list.setSelectionBackground(Color.DARK_GRAY);
+        list.setSelectionForeground(Color.ORANGE);
+        list.setEnabled(true);
+        list.setFixedCellHeight(40);
+        return list;
+    }
+
+    private JScrollPane createScrollPane(JList<String> list) {
+        JScrollPane scrollPane = new JScrollPane(list);
+        TitledBorder border = BorderFactory.createTitledBorder("High Scores");
+        border.setTitleColor(new Color(220, 120, 20));
+        border.setTitleFont(new Font("Rockwell", Font.BOLD, 50));
+        border.setTitleJustification(TitledBorder.CENTER);
+
+        scrollPane.setBorder(border);
+        scrollPane.setBackground(Color.BLACK);
+        return scrollPane;
     }
 
     private JButton createBackButton() {
@@ -103,6 +102,7 @@ public class HighScoresPanel extends JPanel {
             public void mouseEntered(MouseEvent event) {
                 button.setBackground(new Color(100, 0, 0));
             }
+
             @Override
             public void mouseExited(MouseEvent evt) {
                 button.setBackground(Color.BLACK);
